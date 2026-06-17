@@ -3,8 +3,8 @@
   "extends": "./base.json",
   "compilerOptions": {
     "module": "commonjs",
-    "target": "ES2021",
-    "lib": ["ES2021"],
+    "target": "ES2022",
+    "lib": ["ES2022"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "outDir": "./dist",
