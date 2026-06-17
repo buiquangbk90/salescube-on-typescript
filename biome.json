@@ -7,14 +7,7 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": [
-      "node_modules",
-      "dist",
-      ".next",
-      "coverage",
-      "*.config.js",
-      "*.config.mjs"
-    ]
+    "ignore": ["node_modules", "dist", ".next", "coverage", "*.config.js", "*.config.mjs"]
   },
   "formatter": {
     "enabled": true,
@@ -47,6 +40,16 @@
       "javascript": {
         "formatter": {
           "jsxQuoteStyle": "double"
+        }
+      }
+    },
+    {
+      "include": ["apps/api/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useImportType": "off"
+          }
         }
       }
     }
