@@ -6,8 +6,8 @@ TypeScript monorepo powered by **pnpm**, **Turborepo**, **Biome**, and **Vitest*
 
 | Layer     | Technology                        |
 | --------- | --------------------------------- |
-| Backend   | NestJS (Node 20, Express)         |
-| Frontend  | Next.js 14 (App Router) + Tailwind CSS |
+| Backend   | NestJS 10 (Node 24, Express)         |
+| Frontend  | Next.js 16 (App Router) + Tailwind CSS |
 | Language  | TypeScript 5.5                    |
 | Monorepo  | pnpm workspaces + Turborepo       |
 | Linting   | Biome                             |
@@ -32,7 +32,7 @@ salescube/
 
 ### Prerequisites
 
-- Node.js >= 20
+- Node.js >= 24
 - pnpm >= 9  (`npm i -g pnpm`)
 
 ### Install dependencies
