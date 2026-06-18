@@ -1,0 +1,693 @@
+// SalesCube TypeScript - Prisma schema (Priority 1 modules)
+// Reference: docs/spec/02-entity-list.md, docs/spec/04-migration-map.md
+//
+// Conventions:
+// - PK: cuid() string (modern, sortable, URL-safe)
+// - Business identifier: `code` field, unique
+// - Money: Decimal(18, 4) | Quantity: Decimal(18, 4) | Rate: Decimal(8, 6)
+// - Audit: createdAt / updatedAt / createdBy / updatedBy on all main tables
+// - Soft delete: deletedAt where applicable
+// - Snake_case in DB via @map; camelCase in TS
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+/// Loại phiếu bán hàng (legacy SalesSlipTrn.TYPE_*)
+enum SalesType {
+  SALES // 0: Bán hàng thông thường
+  NEWS  // 1: Báo chí
+  WEB   // 2: Web/Quảng cáo
+}
+
+/// Trạng thái phiếu (legacy STATUS_INIT=0, STATUS_FINISH/CLOSE=9)
+enum SlipStatus {
+  DRAFT      // 0
+  FINALIZED  // 9 (sales)
+  CLOSED     // 9 (deposit/bill)
+  CANCELLED
+}
+
+/// Trạng thái hóa đơn
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+  PARTIALLY_PAID
+  PAID
+  CANCELLED
+}
+
+/// Cách tính thuế (内税 / 外税)
+enum TaxShift {
+  INCLUDED // 内税
+  EXCLUDED // 外税
+}
+
+/// Cách làm tròn (legacy taxFractCategory / priceFractCategory)
+enum Fraction {
+  FLOOR  // 切り捨て
+  CEIL   // 切り上げ
+  ROUND  // 四捨五入
+}
+
+/// Chu kỳ thanh toán (legacy paybackCycleCategory)
+enum PaybackCycle {
+  CURRENT_MONTH    // 当月
+  NEXT_MONTH       // 翌月
+  AFTER_NEXT_MONTH // 翌々月
+  MONTHS_3         // 3ヶ月
+}
+
+/// Phương thức thu tiền
+enum DepositMethod {
+  CASH         // 現金
+  TRANSFER     // 振込
+  CHECK        // 小切手
+  AUTO_DEBIT   // 振替
+  CARD         // カード
+  OTHER
+}
+
+/// Loại thuế suất (Reduced rate cho báo chí 8%, Standard 10%)
+enum TaxCategory {
+  STANDARD   // 10% (Sách, Quảng cáo, hàng hóa)
+  REDUCED    // 8% (Báo chí)
+  EXEMPT     // 0% (miễn thuế)
+}
+
+// ============================================================================
+// AUTH / RBAC
+// ============================================================================
+
+model User {
+  id           String    @id @default(cuid())
+  /// Mã user (legacy USER_MST.userId)
+  code         String    @unique
+  email        String    @unique
+  /// Tên Hán tự (legacy nameKnj)
+  name         String
+  /// Tên Katakana / phiên âm
+  nameKana     String?   @map("name_kana")
+  /// Bcrypt hash
+  passwordHash String    @map("password_hash")
+  isActive     Boolean   @default(true) @map("is_active")
+
+  departmentId String?   @map("department_id")
+  department   Department? @relation(fields: [departmentId], references: [id])
+
+  roles        UserRole[]
+
+  // Audit
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  createdBy    String?   @map("created_by")
+  updatedBy    String?   @map("updated_by")
+  deletedAt    DateTime? @map("deleted_at")
+
+  // Reverse relations (created/updated user references → not enforced as FK to avoid cycles)
+  customersInCharge Customer[] @relation("CustomerInCharge")
+
+  @@index([email])
+  @@index([code])
+  @@map("user")
+}
+
+model Department {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  name      String
+  parentId  String?  @map("parent_id")
+  parent    Department?  @relation("DepartmentTree", fields: [parentId], references: [id])
+  children  Department[] @relation("DepartmentTree")
+
+  users     User[]
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("department")
+}
+
+model Role {
+  id          String   @id @default(cuid())
+  /// vd: ADMIN, SALES, MANAGER, ACCOUNTING, WAREHOUSE
+  code        String   @unique
+  name        String
+  description String?
+
+  permissions RolePermission[]
+  users       UserRole[]
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("role")
+}
+
+model Permission {
+  id          String   @id @default(cuid())
+  /// vd: customer.read, customer.write, invoice.close, deposit.allocate
+  code        String   @unique
+  description String?
+
+  roles       RolePermission[]
+
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("permission")
+}
+
+model UserRole {
+  userId String @map("user_id")
+  roleId String @map("role_id")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  assignedAt DateTime @default(now()) @map("assigned_at")
+
+  @@id([userId, roleId])
+  @@map("user_role")
+}
+
+model RolePermission {
+  roleId       String @map("role_id")
+  permissionId String @map("permission_id")
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permission")
+}
+
+// ============================================================================
+// MASTER DATA
+// ============================================================================
+
+/// Khách hàng (legacy CUSTOMER_MST / 得意先マスタ)
+model Customer {
+  id              String    @id @default(cuid())
+  /// Mã KH (legacy customerCode)
+  code            String    @unique
+  /// Tên đầy đủ
+  name            String
+  /// Tên Katakana - hỗ trợ tìm kiếm (legacy customerKana)
+  nameKana        String?   @map("name_kana")
+  /// Tên viết tắt (legacy customerAbbr)
+  abbr            String?
+  /// Tên văn phòng (legacy customerOfficeName)
+  officeName      String?   @map("office_name")
+  officeNameKana  String?   @map("office_name_kana")
+  /// Bộ phận (legacy customerDeptName)
+  departmentName  String?   @map("department_name")
+
+  // Address
+  zipCode         String?   @map("zip_code")
+  address1        String?
+  address2        String?
+
+  // Contact person (legacy customerPc*)
+  contactName     String?   @map("contact_name")
+  contactNameKana String?   @map("contact_name_kana")
+  /// Xưng hô: 様/殿/etc (legacy customerPcPreCategory)
+  contactSalutation String? @map("contact_salutation")
+  contactTitle    String?   @map("contact_title")
+
+  phone           String?
+  fax             String?
+  email           String?
+  url             String?
+
+  // Categorization
+  businessCategory String?  @map("business_category")
+  rankCategory     String?  @map("rank_category")
+
+  // Billing rules
+  taxShift        TaxShift  @default(EXCLUDED) @map("tax_shift")
+  taxFraction     Fraction  @default(FLOOR) @map("tax_fraction")
+  priceFraction   Fraction  @default(FLOOR) @map("price_fraction")
+
+  /// Nhóm chốt (legacy cutoffGroup) – KH cùng nhóm chung ngày chốt
+  cutoffGroup     String?   @map("cutoff_group")
+  /// Ngày chốt: 31 = cuối tháng, 10/15/20/25
+  cutoffDay       Int?      @map("cutoff_day")
+  paybackCycle    PaybackCycle @default(NEXT_MONTH) @map("payback_cycle")
+
+  /// Tỷ lệ chiết khấu (0..1)
+  discountRate    Decimal?  @db.Decimal(8, 6) @map("discount_rate")
+  /// Hạn mức tín dụng
+  creditLimit     Decimal?  @db.Decimal(18, 4) @map("credit_limit")
+
+  // Bank info (for refunds / direct debit)
+  bankCode        String?   @map("bank_code")
+  bankName        String?   @map("bank_name")
+  bankBranchName  String?   @map("bank_branch_name")
+  bankAccountType String?   @map("bank_account_type")
+  bankAccountNo   String?   @map("bank_account_no")
+  bankAccountHolder String? @map("bank_account_holder")
+
+  // Stats (denormalized for dashboard)
+  firstSalesDate  DateTime? @map("first_sales_date")
+  lastSalesDate   DateTime? @map("last_sales_date")
+
+  // Owner (sales rep)
+  inChargeUserId  String?   @map("in_charge_user_id")
+  inChargeUser    User?     @relation("CustomerInCharge", fields: [inChargeUserId], references: [id])
+
+  remarks         String?   @db.Text
+  comment         String?   @db.Text
+
+  salesOrders     SalesOrder[]
+  invoices        Invoice[]
+  deposits        Deposit[]
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  createdBy       String?   @map("created_by")
+  updatedBy       String?   @map("updated_by")
+  deletedAt       DateTime? @map("deleted_at")
+
+  @@index([name])
+  @@index([nameKana])
+  @@index([code])
+  @@map("customer")
+}
+
+/// Nhà cung cấp (legacy SUPPLIER_MST)
+model Supplier {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  name      String
+  nameKana  String?  @map("name_kana")
+  phone     String?
+  email     String?
+  address1  String?
+
+  products  Product[]
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("supplier")
+}
+
+/// Sản phẩm (legacy PRODUCT_MST / 商品マスタ)
+model Product {
+  id              String    @id @default(cuid())
+  /// Mã SP (legacy productCode)
+  code            String    @unique
+  name            String
+  nameKana        String?   @map("name_kana")
+  /// Mã JAN (barcode)
+  janCode         String?   @map("jan_code")
+
+  /// Loại SP: SALES / NEWS / WEB (mirrors SalesType)
+  salesType       SalesType @default(SALES) @map("sales_type")
+  taxCategory     TaxCategory @default(STANDARD) @map("tax_category")
+
+  /// Đơn vị (cái, quyển, kg, ...)
+  unit            String?
+  /// Số lượng/đóng gói
+  packQuantity    Int?      @map("pack_quantity")
+
+  /// Giá vốn (yen)
+  costPrice       Decimal?  @db.Decimal(18, 4) @map("cost_price")
+  /// Giá bán mặc định (giá hiện hành; lịch sử ở ProductPriceHistory)
+  retailPrice     Decimal?  @db.Decimal(18, 4) @map("retail_price")
+  /// Giá web mặc định (legacy webRetailPrice)
+  webPrice        Decimal?  @db.Decimal(18, 4) @map("web_price")
+
+  // Physical
+  weightGram      Float?    @map("weight_gram")
+  widthMm         Float?    @map("width_mm")
+  heightMm        Float?    @map("height_mm")
+  depthMm         Float?    @map("depth_mm")
+
+  // Inventory hints
+  safetyStock     Int?      @map("safety_stock")
+  maxStock        Int?      @map("max_stock")
+  leadTimeDays    Int?      @map("lead_time_days")
+
+  fraction        Fraction  @default(FLOOR)
+
+  supplierId      String?   @map("supplier_id")
+  supplier        Supplier? @relation(fields: [supplierId], references: [id])
+
+  // Multi-level category (legacy product1/2/3)
+  category1       String?
+  category2       String?
+  category3       String?
+
+  isActive        Boolean   @default(true) @map("is_active")
+  discardDate     DateTime? @map("discard_date")
+  remarks         String?   @db.Text
+
+  prices          ProductPriceHistory[]
+  salesOrderLines SalesOrderLine[]
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  createdBy       String?   @map("created_by")
+  updatedBy       String?   @map("updated_by")
+  deletedAt       DateTime? @map("deleted_at")
+
+  @@index([name])
+  @@index([code])
+  @@index([janCode])
+  @@map("product")
+}
+
+/// Lịch sử giá sản phẩm (Timeline – không giới hạn, khác legacy chỉ giữ 3 mức)
+model ProductPriceHistory {
+  id        String    @id @default(cuid())
+  productId String    @map("product_id")
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  /// RETAIL | WEB | COST
+  priceType String    @map("price_type")
+  price     Decimal   @db.Decimal(18, 4)
+
+  /// Hiệu lực từ
+  startDate DateTime  @map("start_date")
+  /// Hiệu lực đến (null = vô hạn)
+  endDate   DateTime? @map("end_date")
+
+  remarks   String?
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  createdBy String?   @map("created_by")
+
+  @@index([productId, priceType, startDate])
+  @@map("product_price_history")
+}
+
+/// Thuế suất theo thời gian (legacy TAX_RATE_MST)
+model TaxRate {
+  id        String      @id @default(cuid())
+  category  TaxCategory @unique
+  /// Tỷ lệ thuế (0.10 = 10%)
+  rate      Decimal     @db.Decimal(8, 6)
+  startDate DateTime    @map("start_date")
+  endDate   DateTime?   @map("end_date")
+
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @updatedAt @map("updated_at")
+
+  @@index([category, startDate])
+  @@map("tax_rate")
+}
+
+// ============================================================================
+// SALES (売上)
+// ============================================================================
+
+/// Phiếu bán hàng (legacy SALES_SLIP_TRN / 売上伝票)
+model SalesOrder {
+  id           String     @id @default(cuid())
+  /// Số phiếu hiển thị (legacy receptNo)
+  orderNo      String     @unique @map("order_no")
+  status       SlipStatus @default(DRAFT)
+  salesType    SalesType  @default(SALES) @map("sales_type")
+
+  customerId   String     @map("customer_id")
+  customer     Customer   @relation(fields: [customerId], references: [id])
+
+  /// Snapshot tên KH tại thời điểm tạo (lịch sử bất biến)
+  customerNameSnapshot String @map("customer_name_snapshot")
+  customerCodeSnapshot String @map("customer_code_snapshot")
+
+  /// Người phụ trách
+  inChargeUserId String?  @map("in_charge_user_id")
+  inChargeName   String?  @map("in_charge_name")
+
+  // Dates
+  orderDate    DateTime   @map("order_date") @db.Date
+  deliveryDate DateTime?  @map("delivery_date") @db.Date
+  /// Ngày chốt bán hàng (legacy salesCutoffDate)
+  cutoffDate   DateTime?  @map("cutoff_date") @db.Date
+
+  // Delivery address (snapshot)
+  deliveryName     String?  @map("delivery_name")
+  deliveryZipCode  String?  @map("delivery_zip_code")
+  deliveryAddress1 String?  @map("delivery_address_1")
+  deliveryAddress2 String?  @map("delivery_address_2")
+  deliveryPhone    String?  @map("delivery_phone")
+
+  // Tax policy snapshot
+  taxShift     TaxShift   @default(EXCLUDED) @map("tax_shift")
+  taxFraction  Fraction   @default(FLOOR)   @map("tax_fraction")
+  priceFraction Fraction  @default(FLOOR)   @map("price_fraction")
+
+  // Totals
+  subtotal     Decimal    @db.Decimal(18, 4) @default(0)
+  taxAmount    Decimal    @db.Decimal(18, 4) @default(0) @map("tax_amount")
+  totalAmount  Decimal    @db.Decimal(18, 4) @default(0) @map("total_amount")
+  grossMargin  Decimal?   @db.Decimal(18, 4) @map("gross_margin")
+
+  remarks      String?    @db.Text
+
+  lines        SalesOrderLine[]
+  invoiceLines InvoiceLine[]
+
+  /// Liên kết hóa đơn (1 SO có thể nằm trong 1 invoice; gán khi billing)
+  invoiceId    String?    @map("invoice_id")
+  invoice      Invoice?   @relation(fields: [invoiceId], references: [id])
+
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  createdBy    String?    @map("created_by")
+  updatedBy    String?    @map("updated_by")
+  finalizedAt  DateTime?  @map("finalized_at")
+  cancelledAt  DateTime?  @map("cancelled_at")
+
+  @@index([customerId, orderDate])
+  @@index([status])
+  @@index([orderDate])
+  @@map("sales_order")
+}
+
+model SalesOrderLine {
+  id           String   @id @default(cuid())
+  salesOrderId String   @map("sales_order_id")
+  salesOrder   SalesOrder @relation(fields: [salesOrderId], references: [id], onDelete: Cascade)
+
+  lineNo       Int      @map("line_no")
+
+  productId    String?  @map("product_id")
+  product      Product? @relation(fields: [productId], references: [id])
+  /// Snapshot tại thời điểm tạo
+  productCode  String?  @map("product_code")
+  productName  String   @map("product_name")
+  description  String?
+
+  quantity     Decimal  @db.Decimal(18, 4)
+  unit         String?
+  unitPrice    Decimal  @db.Decimal(18, 4) @map("unit_price")
+  unitCost     Decimal? @db.Decimal(18, 4) @map("unit_cost")
+
+  taxCategory  TaxCategory @default(STANDARD) @map("tax_category")
+  taxRate      Decimal  @db.Decimal(8, 6) @map("tax_rate")
+
+  /// = quantity * unitPrice (chưa thuế)
+  lineSubtotal Decimal  @db.Decimal(18, 4) @map("line_subtotal")
+  /// Tiền thuế dòng
+  lineTax      Decimal  @db.Decimal(18, 4) @map("line_tax")
+  /// Tổng dòng
+  lineTotal    Decimal  @db.Decimal(18, 4) @map("line_total")
+
+  remarks      String?
+
+  @@unique([salesOrderId, lineNo])
+  @@index([productId])
+  @@map("sales_order_line")
+}
+
+// ============================================================================
+// BILLING (請求)
+// ============================================================================
+
+/// Hóa đơn (legacy BILL_TRN / 請求書)
+model Invoice {
+  id            String        @id @default(cuid())
+  invoiceNo     String        @unique @map("invoice_no")
+  status        InvoiceStatus @default(DRAFT)
+
+  customerId    String        @map("customer_id")
+  customer      Customer      @relation(fields: [customerId], references: [id])
+
+  customerCodeSnapshot String  @map("customer_code_snapshot")
+  customerNameSnapshot String  @map("customer_name_snapshot")
+
+  /// Kỳ hóa đơn
+  billYear      Int           @map("bill_year")
+  billMonth     Int           @map("bill_month")
+  /// Ngày chốt kỳ
+  cutoffDate    DateTime      @map("cutoff_date") @db.Date
+  /// Ngày phát hành HĐ
+  issueDate     DateTime?     @map("issue_date") @db.Date
+  /// Ngày đến hạn thanh toán
+  dueDate       DateTime?     @map("due_date") @db.Date
+
+  cutoffGroup   String?       @map("cutoff_group")
+
+  // Tax policy snapshot
+  taxShift      TaxShift      @default(EXCLUDED) @map("tax_shift")
+
+  /// Số dư đầu kỳ (carried from previous bill)
+  openingBalance   Decimal @db.Decimal(18, 4) @default(0) @map("opening_balance")
+  /// Tổng tiền thu trong kỳ (đã gạch nợ)
+  receivedAmount   Decimal @db.Decimal(18, 4) @default(0) @map("received_amount")
+  /// Điều chỉnh
+  adjustmentAmount Decimal @db.Decimal(18, 4) @default(0) @map("adjustment_amount")
+  /// Doanh thu trong kỳ (subtotal)
+  salesAmount      Decimal @db.Decimal(18, 4) @default(0) @map("sales_amount")
+  /// Thuế trong kỳ
+  taxAmount        Decimal @db.Decimal(18, 4) @default(0) @map("tax_amount")
+  /// Chiết khấu
+  discountAmount   Decimal @db.Decimal(18, 4) @default(0) @map("discount_amount")
+  /// Số dư cuối kỳ = opening + sales + tax - received + adjustment - discount
+  closingBalance   Decimal @db.Decimal(18, 4) @default(0) @map("closing_balance")
+
+  /// Số phiếu trong kỳ
+  slipCount     Int           @default(0) @map("slip_count")
+
+  remarks       String?       @db.Text
+
+  lines         InvoiceLine[]
+  salesOrders   SalesOrder[]
+  allocations   PaymentAllocation[]
+
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+  createdBy     String?       @map("created_by")
+  updatedBy     String?       @map("updated_by")
+  issuedAt      DateTime?     @map("issued_at")
+  closedAt      DateTime?     @map("closed_at")
+  cancelledAt   DateTime?     @map("cancelled_at")
+
+  @@unique([customerId, billYear, billMonth, cutoffGroup])
+  @@index([status])
+  @@index([cutoffDate])
+  @@map("invoice")
+}
+
+model InvoiceLine {
+  id           String   @id @default(cuid())
+  invoiceId    String   @map("invoice_id")
+  invoice      Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  lineNo       Int      @map("line_no")
+
+  /// Tham chiếu tới SalesOrder gốc (nếu có)
+  salesOrderId String?  @map("sales_order_id")
+  salesOrder   SalesOrder? @relation(fields: [salesOrderId], references: [id])
+
+  description  String
+  quantity     Decimal  @db.Decimal(18, 4)
+  unitPrice    Decimal  @db.Decimal(18, 4) @map("unit_price")
+  taxCategory  TaxCategory @default(STANDARD) @map("tax_category")
+  taxRate      Decimal  @db.Decimal(8, 6) @map("tax_rate")
+  lineSubtotal Decimal  @db.Decimal(18, 4) @map("line_subtotal")
+  lineTax      Decimal  @db.Decimal(18, 4) @map("line_tax")
+  lineTotal    Decimal  @db.Decimal(18, 4) @map("line_total")
+
+  @@unique([invoiceId, lineNo])
+  @@map("invoice_line")
+}
+
+// ============================================================================
+// PAYMENT / DEPOSIT (入金)
+// ============================================================================
+
+/// Phiếu thu tiền (legacy DEPOSIT_SLIP_TRN / 入金伝票)
+model Deposit {
+  id            String     @id @default(cuid())
+  depositNo     String     @unique @map("deposit_no")
+  status        SlipStatus @default(DRAFT)
+
+  customerId    String     @map("customer_id")
+  customer      Customer   @relation(fields: [customerId], references: [id])
+
+  customerCodeSnapshot String @map("customer_code_snapshot")
+  customerNameSnapshot String @map("customer_name_snapshot")
+
+  depositDate   DateTime   @map("deposit_date") @db.Date
+  method        DepositMethod @default(TRANSFER)
+
+  /// Tổng tiền thu
+  totalAmount   Decimal    @db.Decimal(18, 4) @map("total_amount")
+  /// Đã gạch nợ
+  allocatedAmount Decimal  @db.Decimal(18, 4) @default(0) @map("allocated_amount")
+  /// Còn lại chưa gạch nợ
+  unallocatedAmount Decimal @db.Decimal(18, 4) @default(0) @map("unallocated_amount")
+
+  /// Thông tin ngân hàng (nếu method=TRANSFER)
+  bankCode      String?    @map("bank_code")
+  bankName      String?    @map("bank_name")
+
+  abstract      String?
+  remarks       String?    @db.Text
+
+  lines         DepositLine[]
+  allocations   PaymentAllocation[]
+
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+  createdBy     String?    @map("created_by")
+  updatedBy     String?    @map("updated_by")
+  closedAt      DateTime?  @map("closed_at")
+  cancelledAt   DateTime?  @map("cancelled_at")
+
+  @@index([customerId, depositDate])
+  @@index([depositDate])
+  @@map("deposit")
+}
+
+model DepositLine {
+  id        String   @id @default(cuid())
+  depositId String   @map("deposit_id")
+  deposit   Deposit  @relation(fields: [depositId], references: [id], onDelete: Cascade)
+
+  lineNo    Int      @map("line_no")
+  amount    Decimal  @db.Decimal(18, 4)
+  remarks   String?
+
+  @@unique([depositId, lineNo])
+  @@map("deposit_line")
+}
+
+/// Gạch nợ - liên kết Deposit ↔ Invoice (消込)
+/// 1 deposit có thể gạch cho nhiều invoice và ngược lại.
+model PaymentAllocation {
+  id        String   @id @default(cuid())
+
+  depositId String   @map("deposit_id")
+  deposit   Deposit  @relation(fields: [depositId], references: [id], onDelete: Cascade)
+
+  invoiceId String   @map("invoice_id")
+  invoice   Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  /// Số tiền gạch nợ
+  amount    Decimal  @db.Decimal(18, 4)
+
+  allocatedAt DateTime @default(now()) @map("allocated_at")
+  allocatedBy String?  @map("allocated_by")
+  remarks   String?
+
+  @@unique([depositId, invoiceId])
+  @@index([invoiceId])
+  @@map("payment_allocation")
+}
+

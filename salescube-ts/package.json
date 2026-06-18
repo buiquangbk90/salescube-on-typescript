@@ -1,0 +1,44 @@
+{
+  "name": "salescube-ts",
+  "version": "0.0.1",
+  "private": true,
+  "description": "SalesCube TypeScript - Migration from legacy Java SalesCube",
+  "packageManager": "pnpm@11.0.9",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "db:up": "docker compose -f docker/docker-compose.yml up -d",
+    "db:down": "docker compose -f docker/docker-compose.yml down",
+    "db:logs": "docker compose -f docker/docker-compose.yml logs -f postgres",
+    "db:migrate": "pnpm --filter @salescube/db prisma migrate dev",
+    "db:generate": "pnpm --filter @salescube/db prisma generate",
+    "db:studio": "pnpm --filter @salescube/db prisma studio",
+    "db:seed": "pnpm --filter @salescube/db prisma db seed"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "eslint": "^9.17.0",
+    "prettier": "^3.4.2",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "prisma",
+      "esbuild",
+      "sharp",
+      "unrs-resolver"
+    ]
+  }
+}
