@@ -1,0 +1,43 @@
+---
+description: Quy ước migrate TypeScript parity-first theo Devin migration-typescript workflow
+globs: salescube-ts/**
+alwaysApply: false
+---
+
+# TypeScript Migration (Parity-first)
+
+> Workflow: `/migration-typescript` → `reference-workflow.md`
+
+## Kiến trúc
+
+```
+salescube-ts/
+  apps/api/      NestJS
+  apps/web/      Next.js App Router
+  packages/db/   Prisma
+  packages/domain/
+  packages/shared/
+  docs/migration/<module>/   parity matrix, API contract, tests
+```
+
+## Thứ tự bắt buộc
+
+1. Legacy evidence (`01-evidence.md`)
+2. **Parity matrix** (`02-parity-matrix.md`) — trước code core
+3. Data mapping + API contract
+4. Implement: shared → domain → repo → service → controller
+5. UI sau khi API ổn định
+6. Characterization tests → `PARITY_VERIFIED`
+
+## DB modes
+
+- `LEGACY_DB_ACCESS` — không `migrate dev` tùy tiện
+- `NEW_TARGET_DB` — redesign được, ghi TARGET_DECISION
+- `CROSS_DB_MIGRATION` — cần ETL plan riêng
+
+## Không được
+
+- Map Action→REST máy móc
+- Global soft-delete middleware từ `DEL_DATETM`
+- `SEQ_MAKER` → autoincrement() tự động
+- Complete khi chỉ build pass

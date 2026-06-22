@@ -1,4 +1,6 @@
-# SalesCube Reverse Engineering
+# AGENT.md
+
+> Quy tắc reverse-engineering cho AI agent. Domain: **`CLAUDE.md`**. Cursor: **`AGENTS.md`**, `.cursor/` (sync từ `.devin/`).
 
 ## Goal
 Reverse engineer this legacy SalesCube source code.

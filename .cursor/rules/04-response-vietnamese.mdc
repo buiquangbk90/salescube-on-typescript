@@ -1,0 +1,11 @@
+---
+description: Phản hồi bằng tiếng Việt, súc tích và rõ ràng
+alwaysApply: true
+---
+
+# Ngôn ngữ phản hồi
+
+- Luôn trả lời bằng **tiếng Việt**
+- Thuật ngữ nghiệp vụ Nhật giữ nguyên kèm dịch khi cần (例: 得意先 = khách hàng)
+- Tài liệu kỹ thuật output: tiếng Việt; tên bảng/column legacy giữ nguyên
+- Tránh jargon không cần thiết; giải thích ngắn gọn lý do thay đổi

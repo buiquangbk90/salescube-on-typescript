@@ -1,0 +1,37 @@
+---
+description: Ngữ cảnh dự án SalesCube — domain, stack legacy/target, rủi ro migration
+alwaysApply: true
+---
+
+# SalesCube — Core Context
+
+Đọc chi tiết: `CLAUDE.md` (nghiệp vụ + kiến trúc legacy).
+
+## Mục tiêu
+Migrate hệ thống bán hàng Nhật Bản (sách/ấn phẩm) từ Java legacy sang TypeScript — **rewrite có kiểm soát**, không đổi behavior nghiệp vụ.
+
+## Stack
+| | Legacy | Target (`salescube-ts/`) |
+|---|--------|--------------------------|
+| Web | Struts 1.2 + JSP | Next.js App Router |
+| API | Java Action | NestJS |
+| ORM | S2JDBC (581 SQL files) | Prisma |
+| DB | MySQL 5.x, no FK | PostgreSQL |
+
+## Quy ước legacy (bắt buộc nhớ)
+- Soft-delete: `DEL_DATETM` → `deletedAt`
+- Sequence: `SEQ_MAKER` → autoincrement/cuid
+- Audit: `*_HIST` snapshot sau mỗi thay đổi
+- FK chỉ ở app layer — không invent DB constraints
+- Multi-tenant: suffix bảng `_XXXXX` (legacy)
+
+## Không được
+- Sửa source trong `SalesCube/` (nếu có trong repo)
+- Bịa business rules — cite source hoặc đánh dấu Unknown
+- Dùng production credentials
+
+## Tài liệu tham chiếu
+- Domain: `CLAUDE.md`
+- Reverse-engineering: `AGENT.md` → output vào `output/`
+- Spec migration: `docs/spec/`
+- Function design: `docs/function-design/FD-<MODULE>-<NN>-*.md`

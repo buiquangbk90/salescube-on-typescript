@@ -1,0 +1,32 @@
+---
+description: Pipeline bắt buộc sau workflow sinh output — gap check rồi review
+alwaysApply: true
+---
+
+# Workflow Output Pipeline
+
+Mọi skill **sinh output** phải tuân pipeline:
+
+```
+Generate → Cross-reference → Gap Check → Review → Hoàn tất
+```
+
+## Skills (gọi bằng `/`)
+| Skill | Output |
+|-------|--------|
+| `/reverse-engineering-java` | `output/`, `docs/spec/` |
+| `/generate-workflow-docs` | `output/workflows/WF-*.md` |
+| `/generate-function-design` | `docs/function-design/FD-<MODULE>-*.md` |
+| `/generate-prisma-schema` | `schema.prisma` |
+| `/migration-typescript` | `salescube-ts/**` |
+| `/check-gap-requirements` | `docs/spec/gaps/GAP-*.md` |
+| `/review-workflow-output` | `docs/spec/reviews/REV-*.md` |
+
+## Bắt buộc
+1. **Gap check** trước review — verdict `READY_FOR_REVIEW`
+2. **Review** sau gap pass — verdict `APPROVED` hoặc sửa + re-review
+3. **Không báo hoàn tất** khi thiếu GAP hoặc REV report
+
+## Gap vs Review
+- Gap: *thiếu gì so với requirement?*
+- Review: *nội dung có đúng/evidence OK?*

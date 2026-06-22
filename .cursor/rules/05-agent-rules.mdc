@@ -1,0 +1,62 @@
+---
+description: Quy tắc agent bất biến cho RE và migration — từ .devin/rules/agent-rules.md
+alwaysApply: true
+---
+
+# SalesCube Agent Rules
+
+Áp dụng cho **toàn bộ workflows** reverse engineering & migration.
+
+## 1. Quy tắc bất biến
+
+- **KHÔNG sửa** file trong `SalesCube/` (legacy)
+- **KHÔNG bịa** business rules — cite source thực tế
+- **KHÔNG dùng** production credentials
+- **KHÔNG tạo file** ngoài: `output/`, `docs/`, `salescube-ts/`, `.cursor/`
+
+## 2. Trích dẫn bắt buộc
+
+Mọi kết luận kèm: file path + line range `ClassName.java:L10-L45`
+
+Sai: "theo Java code". Đúng: `Confirmed: path/file.java:72-84`
+
+## 3. Mức độ chắc chắn
+
+| Nhãn | Khi dùng |
+|------|----------|
+| `Confirmed by code` / `LEGACY_CONFIRMED` | File + line rõ |
+| `Inferred from code` / `ASSUMPTION` | Pattern tương tự |
+| `Unknown / needs verification` | Không đủ source |
+
+**Nghiêm cấm** kết luận không có nhãn.
+
+## 4. Output locations
+
+| Output | Path |
+|--------|------|
+| RE docs | `output/01-*.md` … `output/10-*.md` |
+| Workflows | `output/workflows/WF-XX-*.md` |
+| Function Design | `docs/function-design/FD-<MODULE>-<NN>-*.md` |
+| Migration docs | `salescube-ts/docs/migration/<module>/` |
+| Gap / Review | `docs/spec/gaps/`, `docs/spec/reviews/` |
+
+## 5. Stack target
+
+Next.js 14 + **NestJS** + Prisma + PostgreSQL + Zod + TanStack Query + pnpm/Turbo.
+
+> Backend là **NestJS**, không phải tRPC.
+
+## 6. Mapping Java → TypeScript
+
+| Java | TypeScript |
+|------|------------|
+| `*Action.java` | NestJS `@Controller` |
+| `*Service.java` | `@Injectable` service |
+| `*Dto.java` | Zod + type |
+| S2JDBC SQL | Prisma query |
+| `MENU_ID` | Guard + `@RequirePermissions` |
+| `DEL_DATETM` | `deletedAt` — **chỉ khi behavior đã xác minh** |
+
+## 7. Format
+
+Markdown, tiếng Việt; code snippets có language tag.

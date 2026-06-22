@@ -1,0 +1,40 @@
+---
+description: Quy tắc reverse-engineer Java legacy theo AGENT.md và Devin workflow
+globs: output/**,docs/spec/**,docs/function-design/**
+alwaysApply: false
+---
+
+# Reverse Engineering (AGENT.md + Devin)
+
+> Workflow chi tiết: `/reverse-engineering-java` → `reference-workflow.md`
+
+## Mục tiêu
+
+Reverse-engineer — **không rewrite**. Evidence-first với reachability scope.
+
+## Provenance
+
+`CONFIRMED_BY_CODE` | `CONFIRMED_BY_CONFIG` | `CONFIRMED_BY_DDL` | `INFERRED_FROM_CODE` | `RUNTIME_DEPENDENT` | `UNKNOWN_NEEDS_VERIFICATION` | `POSSIBLY_UNREACHABLE`
+
+## Output (`output/`)
+
+1. `01-reverse-engineering-overview.md`
+2. `02-module-inventory.md`
+3. `03-route-api-inventory.md`
+4. `04-dependency-graph.md`
+5. `05-data-access-inventory.md`
+6. `06-runtime-config-inventory.md`
+7. `workflows/WF-XX-*.md` (+ `_inventory`, `_evidence`, `_reports`)
+8. `reverse-engineering/<module>/00-scope.md` … `08-analysis-report.md`
+9. Integrations, risks (theo AGENT.md)
+
+## Quy tắc
+
+- Không coi tên Action/Service/SQL = reachable
+- Không suy transaction boundary từ tên method
+- Không suy soft-delete chỉ từ `DEL_DATETM`
+- JSP/JS logic phải được kiểm tra riêng
+
+## Skills liên quan
+
+`/reverse-engineering-java` → `/generate-workflow-docs` → `/generate-function-design`
