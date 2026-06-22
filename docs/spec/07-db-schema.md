@@ -1,0 +1,142 @@
+# SalesCube - Database Schema (Reverse-engineered từ SQL)
+> **Source:** `/Users/peocandy/Project/salescube-on-typescript/SalesCube/DB/sql/createtable/CREATE.sql`
+> **Lưu ý:** Tên bảng trong SQL script có hậu tố `_XXXXX` là placeholder cho instance/tenant. Khi triển khai, `XXXXX` được thay bằng mã instance.
+
+---
+## 1. Danh sách Table/View
+| # | Loại | Tên (có suffix) | Tên logic |
+|----|------|-----------------|-----------|
+| 1 | TABLE | `IF` | `IF` |
+| 2 | TABLE | `IF` | `IF` |
+| 3 | TABLE | `IF` | `IF` |
+| 4 | TABLE | `IF` | `IF` |
+| 5 | TABLE | `IF` | `IF` |
+| 6 | TABLE | `IF` | `IF` |
+| 7 | TABLE | `IF` | `IF` |
+| 8 | TABLE | `IF` | `IF` |
+| 9 | TABLE | `IF` | `IF` |
+| 10 | TABLE | `IF` | `IF` |
+| 11 | TABLE | `IF` | `IF` |
+| 12 | TABLE | `IF` | `IF` |
+| 13 | TABLE | `IF` | `IF` |
+| 14 | TABLE | `IF` | `IF` |
+| 15 | TABLE | `IF` | `IF` |
+| 16 | TABLE | `IF` | `IF` |
+| 17 | TABLE | `IF` | `IF` |
+| 18 | TABLE | `IF` | `IF` |
+| 19 | TABLE | `IF` | `IF` |
+| 20 | TABLE | `IF` | `IF` |
+| 21 | TABLE | `IF` | `IF` |
+| 22 | TABLE | `IF` | `IF` |
+| 23 | TABLE | `IF` | `IF` |
+| 24 | TABLE | `IF` | `IF` |
+| 25 | TABLE | `IF` | `IF` |
+| 26 | TABLE | `IF` | `IF` |
+| 27 | TABLE | `IF` | `IF` |
+| 28 | TABLE | `IF` | `IF` |
+| 29 | TABLE | `IF` | `IF` |
+| 30 | TABLE | `IF` | `IF` |
+| 31 | TABLE | `IF` | `IF` |
+| 32 | TABLE | `IF` | `IF` |
+| 33 | TABLE | `IF` | `IF` |
+| 34 | TABLE | `IF` | `IF` |
+| 35 | TABLE | `IF` | `IF` |
+| 36 | TABLE | `IF` | `IF` |
+| 37 | TABLE | `IF` | `IF` |
+| 38 | TABLE | `IF` | `IF` |
+| 39 | TABLE | `IF` | `IF` |
+| 40 | TABLE | `IF` | `IF` |
+| 41 | TABLE | `IF` | `IF` |
+| 42 | TABLE | `IF` | `IF` |
+| 43 | TABLE | `IF` | `IF` |
+| 44 | TABLE | `IF` | `IF` |
+| 45 | TABLE | `IF` | `IF` |
+| 46 | TABLE | `IF` | `IF` |
+| 47 | TABLE | `IF` | `IF` |
+| 48 | TABLE | `IF` | `IF` |
+| 49 | TABLE | `IF` | `IF` |
+| 50 | TABLE | `IF` | `IF` |
+| 51 | TABLE | `IF` | `IF` |
+| 52 | TABLE | `IF` | `IF` |
+| 53 | TABLE | `IF` | `IF` |
+| 54 | TABLE | `IF` | `IF` |
+| 55 | TABLE | `IF` | `IF` |
+| 56 | TABLE | `IF` | `IF` |
+| 57 | TABLE | `IF` | `IF` |
+| 58 | TABLE | `IF` | `IF` |
+| 59 | TABLE | `IF` | `IF` |
+| 60 | TABLE | `IF` | `IF` |
+| 61 | TABLE | `IF` | `IF` |
+| 62 | TABLE | `IF` | `IF` |
+| 63 | TABLE | `IF` | `IF` |
+| 64 | TABLE | `IF` | `IF` |
+| 65 | TABLE | `IF` | `IF` |
+| 66 | TABLE | `IF` | `IF` |
+| 67 | TABLE | `IF` | `IF` |
+| 68 | TABLE | `IF` | `IF` |
+| 69 | TABLE | `IF` | `IF` |
+| 70 | TABLE | `IF` | `IF` |
+| 71 | TABLE | `IF` | `IF` |
+| 72 | TABLE | `IF` | `IF` |
+| 73 | TABLE | `IF` | `IF` |
+| 74 | TABLE | `IF` | `IF` |
+| 75 | TABLE | `IF` | `IF` |
+| 76 | TABLE | `IF` | `IF` |
+| 77 | TABLE | `IF` | `IF` |
+| 78 | TABLE | `IF` | `IF` |
+| 79 | TABLE | `IF` | `IF` |
+| 80 | TABLE | `IF` | `IF` |
+| 81 | TABLE | `IF` | `IF` |
+| 82 | TABLE | `IF` | `IF` |
+| 83 | TABLE | `IF` | `IF` |
+| 84 | TABLE | `IF` | `IF` |
+| 85 | TABLE | `IF` | `IF` |
+| 86 | TABLE | `IF` | `IF` |
+| 87 | TABLE | `IF` | `IF` |
+| 88 | TABLE | `IF` | `IF` |
+| 89 | TABLE | `IF` | `IF` |
+| 90 | TABLE | `IF` | `IF` |
+| 91 | TABLE | `IF` | `IF` |
+| 92 | TABLE | `IF` | `IF` |
+| 93 | TABLE | `IF` | `IF` |
+| 94 | TABLE | `IF` | `IF` |
+| 95 | TABLE | `IF` | `IF` |
+| 96 | TABLE | `IF` | `IF` |
+| 97 | TABLE | `IF` | `IF` |
+| 98 | TABLE | `IF` | `IF` |
+| 99 | TABLE | `IF` | `IF` |
+| 100 | TABLE | `IF` | `IF` |
+| 101 | TABLE | `IF` | `IF` |
+| 102 | TABLE | `IF` | `IF` |
+| 103 | TABLE | `IF` | `IF` |
+| 104 | TABLE | `IF` | `IF` |
+| 105 | TABLE | `IF` | `IF` |
+| 106 | TABLE | `IF` | `IF` |
+| 107 | TABLE | `IF` | `IF` |
+| 108 | TABLE | `IF` | `IF` |
+| 109 | TABLE | `IF` | `IF` |
+| 110 | TABLE | `IF` | `IF` |
+| 111 | TABLE | `IF` | `IF` |
+| 112 | TABLE | `IF` | `IF` |
+| 113 | TABLE | `IF` | `IF` |
+| 114 | TABLE | `IF` | `IF` |
+| 115 | TABLE | `IF` | `IF` |
+| 116 | TABLE | `IF` | `IF` |
+| 117 | TABLE | `IF` | `IF` |
+| 118 | TABLE | `IF` | `IF` |
+| 119 | TABLE | `IF` | `IF` |
+| 120 | TABLE | `IF` | `IF` |
+| 121 | TABLE | `IF` | `IF` |
+| 122 | TABLE | `IF` | `IF` |
+| 123 | TABLE | `IF` | `IF` |
+| 124 | TABLE | `IF` | `IF` |
+| 125 | TABLE | `IF` | `IF` |
+| 126 | TABLE | `IF` | `IF` |
+| 127 | TABLE | `IF` | `IF` |
+| 128 | TABLE | `IF` | `IF` |
+| 129 | TABLE | `IF` | `IF` |
+
+**Tổng cộng:** 129 đối tượng (table/view)
+
+---
+*Generated from SalesCube DB script*

@@ -1,6 +1,7 @@
 # Prisma Schema - Priority 1 Modules
 
 > Source of truth: `@/salescube-ts/packages/db/prisma/schema.prisma`
+> **Lưu ý:** Tài liệu này là đề xuất thiết kế schema cho hệ thống TypeScript mới. Dữ liệu nguồn legacy được reverse-engineered trong các file `01-module-inventory.md`, `02-entity-list.md`, `05-screen-inventory.md` và `07-db-schema.md`.
 
 ## Tổng quan
 

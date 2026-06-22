@@ -1,371 +1,306 @@
 # SalesCube - Screen Inventory (Danh sách Màn hình)
-
-> Liệt kê chi tiết các màn hình JSP trong SalesCube legacy và mapping sang Next.js.
-> **Source:** `workspace/SalesCube/src/main/webapp/WEB-INF/view/`
+> Liệt kê toàn bộ màn hình JSP từ source code.
+> **Source:** `/Users/peocandy/Project/salescube-on-typescript/SalesCube/WEB/SalesCube/src/main/webapp/WEB-INF/view/`
 
 ---
-
 ## 1. Tổng quan View Structure
-
 ```
-WEB-INF/view/
-├── ajax/           (99 files)   - AJAX partial views
-├── annual/         (2 files)    - Báo cáo năm
-├── bill/           (10 files)   - Hóa đơn
-├── common/         (7 files)    - Shared components
-├── daily/          (7 files)    - Xử lý ngày
-├── deposit/        (9 files)    - Thu tiền
-├── estimate/       (6 files)    - Báo giá
-├── login/          (1 file)     - Đăng nhập
-├── master/         (39 files)   - Master data
-├── menu/           (1 file)     - Menu chính
-├── monthly/        (10 files)   - Xử lý tháng
-├── payment/        (8 files)    - Thanh toán
-├── porder/         (7 files)    - Đặt hàng mua
-├── purchase/       (4 files)    - Mua hàng
-├── report/         (11 files)   - Báo cáo
-├── rorder/         (6 files)    - Đơn hàng trả
-├── sales/          (15 files)   - Bán hàng
-├── setting/        (12 files)   - Cài đặt
-└── stock/          (14 files)   - Tồn kho
+ajax/           (93 files)
+bill/           (6 files)
+common/           (7 files)
+deposit/           (6 files)
+estimate/           (6 files)
+login/           (1 files)
+master/           (33 files)
+menu/           (1 files)
+payment/           (5 files)
+porder/           (7 files)
+purchase/           (4 files)
+report/           (3 files)
+rorder/           (5 files)
+sales/           (8 files)
+setting/           (13 files)
+stock/           (14 files)
 ```
-
-**Total: 268 JSP files**
-
----
-
-## 2. MASTER Screens (39 files)
-
-### 2.1. Customer (得意先マスタ) - 8 screens
-
-| # | JSP File | Mô tả | Next.js Route | Priority |
-|---|----------|-------|---------------|----------|
-| 1 | `editCustomer.jsp` | Thêm/Sửa KH | `/customers/new`, `/customers/[id]/edit` | **P1** |
-| 2 | `searchCustomer.jsp` | Tìm kiếm KH | `/customers` | **P1** |
-| 3 | `customerList.jsp` | Danh sách KH | `/customers/list` | P2 |
-| 4 | `customerImport.jsp` | Import KH CSV | `/customers/import` | P3 |
-| 5 | `customerExport.jsp` | Export KH | `/customers/export` | P3 |
-| 6 | `editDelivery.jsp` | Nơi giao hàng | `/customers/[id]/deliveries` | P2 |
-| 7 | `searchDelivery.jsp` | Tìm nơi giao | `/deliveries` | P2 |
-| 8 | `customerHistory.jsp` | Lịch sử KH | `/customers/[id]/history` | P3 |
-
-### 2.2. Product (商品マスタ) - 8 screens
-
-| # | JSP File | Mô tả | Next.js Route | Priority |
-|---|----------|-------|---------------|----------|
-| 1 | `editProduct.jsp` | Thêm/Sửa SP | `/products/new`, `/products/[id]/edit` | **P1** |
-| 2 | `searchProduct.jsp` | Tìm kiếm SP | `/products` | **P1** |
-| 3 | `productList.jsp` | Danh sách SP | `/products/list` | P2 |
-| 4 | `productImport.jsp` | Import SP | `/products/import` | P3 |
-| 5 | `editProductSet.jsp` | Sản phẩm set | `/products/sets` | P3 |
-| 6 | `editSupplier.jsp` | Nhà cung cấp | `/admin/suppliers` | P3 |
-| 7 | `searchSupplier.jsp` | Tìm NCC | `/admin/suppliers/search` | P3 |
-| 8 | `editRack.jsp` | Kệ hàng | `/admin/racks` | P3 |
-
-### 2.3. User & Role - 6 screens
-
-| # | JSP File | Mô tả | Next.js Route | Priority |
-|---|----------|-------|---------------|----------|
-| 1 | `editUser.jsp` | Thêm/Sửa user | `/admin/users/new` | **P1** |
-| 2 | `searchUser.jsp` | Tìm user | `/admin/users` | **P1** |
-| 3 | `editRole.jsp` | Phân quyền | `/admin/roles` | **P1** |
-| 4 | `editDept.jsp` | Phòng ban | `/admin/departments` | P2 |
-| 5 | `searchDept.jsp` | Tìm phòng ban | `/admin/departments/search` | P2 |
-| 6 | `passwordChange.jsp` | Đổi mật khẩu | `/profile/password` | P2 |
-
-### 2.4. Category & Settings - 8 screens
-
-| # | JSP File | Mô tả | Next.js Route | Priority |
-|---|----------|-------|---------------|----------|
-| 1 | `editCategory.jsp` | Phân loại | `/admin/categories` | P2 |
-| 2 | `searchCategory.jsp` | Tìm phân loại | `/admin/categories/search` | P2 |
-| 3 | `editTaxRate.jsp` | Thuế suất | `/admin/tax-rates` | **P1** |
-| 4 | `editBank.jsp` | Ngân hàng | `/admin/banks` | P3 |
-| 5 | `editUnit.jsp` | Đơn vị tính | `/admin/units` | P3 |
-| 6 | `editCustomerRank.jsp` | Xếp hạng KH | `/admin/customer-ranks` | P3 |
-| 7 | `editPriceList.jsp` | Bảng giá | `/admin/prices` | P3 |
-| 8 | `editDiscount.jsp` | Chiết khấu | `/admin/discounts` | P3 |
-
-### 2.5. Other Masters - 9 screens
-
-| # | JSP File | Mô tả | Next.js Route | Priority |
-|---|----------|-------|---------------|----------|
-| 1 | `editCompany.jsp` | Thông tin công ty | `/admin/company` | P2 |
-| 2 | `editCodePattern.jsp` | Mẫu mã số | `/admin/code-patterns` | P3 |
-| 3 | `editWorkDay.jsp` | Ngày làm việc | `/admin/work-days` | P3 |
-| 4 | `editWarehouse.jsp` | Kho | `/admin/warehouses` | P3 |
-| 5 | `editTransport.jsp` | Vận chuyển | `/admin/transport` | P3 |
-| 6 | `editZone.jsp` | Vùng miền | `/admin/zones` | P3 |
-| 7 | `editRoute.jsp` | Tuyến đường | `/admin/routes` | P3 |
-| 8 | `editDeliveryTime.jsp` | Thời gian giao | `/admin/delivery-times` | P3 |
-| 9 | `editPaymentCycle.jsp` | Chu kỳ thanh toán | `/admin/payment-cycles` | P3 |
+**Total: 212 JSP files**
 
 ---
 
-## 3. SALES Screens (15 files)
+## 2. AJAX (93 files)
+| # | JSP File | Mô tả |
+|----|----------|-------|
+| 1 | `ajax/bill/makeOutBillAjax/result.jsp` | - |
+| 2 | `ajax/bill/searchBillResultAjax/result.jsp` | - |
+| 3 | `ajax/bill/searchCloseBillResultAjax/result.jsp` | - |
+| 4 | `ajax/deposit/importBankDepositAjax/excel.jsp` | - |
+| 5 | `ajax/deposit/importBankDepositAjax/searchResultList.jsp` | - |
+| 6 | `ajax/deposit/importBankDepositAjax/searchResultListExls.jsp` | - |
+| 7 | `ajax/deposit/importDeliveryDepositAjax/excel.jsp` | - |
+| 8 | `ajax/deposit/importDeliveryDepositAjax/searchResultList.jsp` | - |
+| 9 | `ajax/deposit/importDeliveryDepositAjax/searchResultListExls.jsp` | - |
+| 10 | `ajax/deposit/searchDepositResultAjax/result.jsp` | - |
+| 11 | `ajax/dialog/copySlipDialog/dialog.jsp` | - |
+| 12 | `ajax/dialog/copySlipDialog/result/deposit.jsp` | - |
+| 13 | `ajax/dialog/copySlipDialog/result/entrustPorder.jsp` | - |
+| 14 | `ajax/dialog/copySlipDialog/result/estimate.jsp` | - |
+| 15 | `ajax/dialog/copySlipDialog/result/porder.jsp` | - |
+| 16 | `ajax/dialog/copySlipDialog/result/rorder.jsp` | - |
+| 17 | `ajax/dialog/copySlipDialog/result/sales.jsp` | - |
+| 18 | `ajax/dialog/copySlipDialog/result/supplier.jsp` | - |
+| 19 | `ajax/dialog/copySlipDialog/slip/deposit.jsp` | - |
+| 20 | `ajax/dialog/copySlipDialog/slip/entrustPorder.jsp` | - |
+| 21 | `ajax/dialog/copySlipDialog/slip/estimate.jsp` | - |
+| 22 | `ajax/dialog/copySlipDialog/slip/porder.jsp` | - |
+| 23 | `ajax/dialog/copySlipDialog/slip/rorder.jsp` | - |
+| 24 | `ajax/dialog/copySlipDialog/slip/sales.jsp` | - |
+| 25 | `ajax/dialog/copySlipDialog/slip/supplier.jsp` | - |
+| 26 | `ajax/dialog/detailDispSettingDialog/dialog.jsp` | - |
+| 27 | `ajax/dialog/masterDefaultSettingDialog/dialog.jsp` | - |
+| 28 | `ajax/dialog/referFilesDialog/dialog.jsp` | - |
+| 29 | `ajax/dialog/searchCustomerDialog/dialog.jsp` | - |
+| 30 | `ajax/dialog/searchCustomerDialog/result.jsp` | - |
+| 31 | `ajax/dialog/searchDiscountDialog/dialog.jsp` | - |
+| 32 | `ajax/dialog/searchDiscountDialog/result.jsp` | - |
+| 33 | `ajax/dialog/searchProductDialog/dialog.jsp` | - |
+| 34 | `ajax/dialog/searchProductDialog/result.jsp` | - |
+| 35 | `ajax/dialog/searchRackDialog/dialog.jsp` | - |
+| 36 | `ajax/dialog/searchRackDialog/result.jsp` | - |
+| 37 | `ajax/dialog/searchSupplierDialog/dialog.jsp` | - |
+| 38 | `ajax/dialog/searchSupplierDialog/result.jsp` | - |
+| 39 | `ajax/dialog/searchUserDialog/dialog.jsp` | - |
+| 40 | `ajax/dialog/searchUserDialog/result.jsp` | - |
+| 41 | `ajax/dialog/searchWarehouseDialog/dialog.jsp` | - |
+| 42 | `ajax/dialog/searchWarehouseDialog/result.jsp` | - |
+| 43 | `ajax/dialog/searchZipCodeDialog/dialog.jsp` | - |
+| 44 | `ajax/dialog/searchZipCodeDialog/result.jsp` | - |
+| 45 | `ajax/dialog/showCategoryDialog/dialog.jsp` | - |
+| 46 | `ajax/dialog/showProductInfoDialog/dialog.jsp` | - |
+| 47 | `ajax/dialog/showStockInfoDialog/dialog.jsp` | - |
+| 48 | `ajax/errorResponse.jsp` | - |
+| 49 | `ajax/estimate/searchEstimateResultAjax/result.jsp` | - |
+| 50 | `ajax/master/searchBankAjax/result.jsp` | - |
+| 51 | `ajax/master/searchCustomerAjax/result.jsp` | - |
+| 52 | `ajax/master/searchCustomerRankAjax/result.jsp` | - |
+| 53 | `ajax/master/searchDiscountAjax/result.jsp` | - |
+| 54 | `ajax/master/searchProductAjax/result.jsp` | - |
+| 55 | `ajax/master/searchProductClassAjax/result.jsp` | - |
+| 56 | `ajax/master/searchProductSetAjax/result.jsp` | - |
+| 57 | `ajax/master/searchRackAjax/result.jsp` | - |
+| 58 | `ajax/master/searchRateAjax/result.jsp` | - |
+| 59 | `ajax/master/searchSupplierAjax/result.jsp` | - |
+| 60 | `ajax/master/searchWarehouseAjax/result.jsp` | - |
+| 61 | `ajax/outputBalanceListAjax/excel.jsp` | - |
+| 62 | `ajax/outputBalanceListAjax/searchResultList.jsp` | - |
+| 63 | `ajax/outputCustomerHistAjax/excel.jsp` | - |
+| 64 | `ajax/outputCustomerHistAjax/searchResultList.jsp` | - |
+| 65 | `ajax/outputProductHistAjax/excel.jsp` | - |
+| 66 | `ajax/outputProductHistAjax/searchResultList.jsp` | - |
+| 67 | `ajax/outputRecommendListAjax/excel.jsp` | - |
+| 68 | `ajax/outputRecommendListAjax/searchResultList.jsp` | - |
+| 69 | `ajax/outputStockListAjax/excel.jsp` | - |
+| 70 | `ajax/outputStockListAjax/outputResultList.jsp` | - |
+| 71 | `ajax/outputStockListAjax/outputStockListResult.jsp` | - |
+| 72 | `ajax/outputStockReportAjax/excel.jsp` | - |
+| 73 | `ajax/outputStockReportAjax/outputResultList.jsp` | - |
+| 74 | `ajax/outputStockReportAjax/outputStockReportResult.jsp` | - |
+| 75 | `ajax/payment/searchPaymentResultAjax/result.jsp` | - |
+| 76 | `ajax/porder/makeOutPOrderAjax/result.jsp` | - |
+| 77 | `ajax/porder/searchPOrderResultAjax/result.jsp` | - |
+| 78 | `ajax/purchase/searchPurchaseResultAjax/result.jsp` | - |
+| 79 | `ajax/referenceHistoryAjax/excel.jsp` | - |
+| 80 | `ajax/referenceHistoryAjax/searchResultList.jsp` | - |
+| 81 | `ajax/referenceMstAjax/excel.jsp` | - |
+| 82 | `ajax/referenceMstAjax/searchResultList.jsp` | - |
+| 83 | `ajax/rorder/importOnlineOrderResultAjax/result.jsp` | - |
+| 84 | `ajax/rorder/searchROrderResultAjax/result.jsp` | - |
+| 85 | `ajax/sales/searchOutputInvoiceAjax/outputDummy.jsp` | - |
+| 86 | `ajax/sales/searchOutputInvoiceAjax/result.jsp` | - |
+| 87 | `ajax/sales/searchOutputSalesReportAjax/result.jsp` | - |
+| 88 | `ajax/sales/searchSalesResultAjax/result.jsp` | - |
+| 89 | `ajax/setting/searchDeptResultAjax/result.jsp` | - |
+| 90 | `ajax/setting/searchFileResultAjax/result.jsp` | - |
+| 91 | `ajax/setting/searchUserResultAjax/result.jsp` | - |
+| 92 | `ajax/stock/searchEntrustStockResultAjax/result.jsp` | - |
+| 93 | `ajax/stock/searchStockResultAjax/result.jsp` | - |
 
-### 3.1. Sales Slip (売上伝票) - 8 screens
+## 2. BILL (6 files)
+| # | JSP File | Mô tả |
+|----|----------|-------|
+| 1 | `bill/closeArtBalance/closeArtBalance.jsp` | - |
+| 2 | `bill/closeBill/closeBill.jsp` | - |
+| 3 | `bill/makeOutBill/search.jsp` | - |
+| 4 | `bill/searchBill/search.jsp` | - |
+| 5 | `bill/searchBillResultOutput/excel.jsp` | - |
+| 6 | `bill/searchBillResultOutput/resultList.jsp` | - |
 
-| # | JSP File | Mô tả | Next.js Route | Priority |
-|---|----------|-------|---------------|----------|
-| 1 | `inputSales.jsp` | Nhập phiếu bán | `/sales-orders/new` | **P1** |
-| 2 | `editSales.jsp` | Sửa phiếu bán | `/sales-orders/[id]/edit` | **P1** |
-| 3 | `searchSales.jsp` | Tìm phiếu bán | `/sales-orders` | **P1** |
-| 4 | `salesList.jsp` | Danh sách bán | `/sales-orders/list` | P2 |
-| 5 | `salesDetail.jsp` | Chi tiết bán | `/sales-orders/[id]` | **P1** |
-| 6 | `salesCopy.jsp` | Copy phiếu bán | `/sales-orders/[id]/copy` | P2 |
-| 7 | `salesCancel.jsp` | Hủy phiếu bán | `/sales-orders/[id]/cancel` | **P1** |
-| 8 | `salesHistory.jsp` | Lịch sử bán | `/sales-orders/[id]/history` | P2 |
+## 2. COMMON (7 files)
+| # | JSP File | Mô tả |
+|----|----------|-------|
+| 1 | `common/common.jsp` | - |
+| 2 | `common/error.jsp` | - |
+| 3 | `common/footer.jsp` | - |
+| 4 | `common/header.jsp` | - |
+| 5 | `common/menubar.jsp` | - |
+| 6 | `common/rowcount.jsp` | - |
+| 7 | `common/titlebar.jsp` | - |
 
-### 3.2. Estimate (見積) - 3 screens
+## 2. DEPOSIT (6 files)
+| # | JSP File | Mô tả |
+|----|----------|-------|
+| 1 | `deposit/importBankDeposit/importBankDeposit.jsp` | - |
+| 2 | `deposit/importDeliveryDeposit/importDeliveryDeposit.jsp` | - |
+| 3 | `deposit/inputDeposit/inputDeposit.jsp` | - |
+| 4 | `deposit/searchDeposit/search.jsp` | - |
+| 5 | `deposit/searchDepositResultOutput/excel.jsp` | - |
+| 6 | `deposit/searchDepositResultOutput/resultList.jsp` | - |
 
-| # | JSP File | Mô tả | Next.js Route | Priority |
-|---|----------|-------|---------------|----------|
-| 1 | `inputEstimate.jsp` | Nhập báo giá | `/estimates/new` | P3 |
-| 2 | `editEstimate.jsp` | Sửa báo giá | `/estimates/[id]/edit` | P3 |
-| 3 | `searchEstimate.jsp` | Tìm báo giá | `/estimates` | P3 |
+## 2. ESTIMATE (6 files)
+| # | JSP File | Mô tả |
+|----|----------|-------|
+| 1 | `estimate/dispProductPriceList/dispProductPriceList.jsp` | - |
+| 2 | `estimate/inputEstimate/inputEstimate.jsp` | - |
+| 3 | `estimate/searchEstimate/dispProductPriceList.jsp` | - |
+| 4 | `estimate/searchEstimate/search.jsp` | - |
+| 5 | `estimate/searchEstimateResultOutput/excel.jsp` | - |
+| 6 | `estimate/searchEstimateResultOutput/resultList.jsp` | - |
 
-### 3.3. RO Order (受注) - 3 screens
+## 2. LOGIN (1 files)
+| # | JSP File | Mô tả |
+|----|----------|-------|
+| 1 | `login/login.jsp` | - |
 
-| # | JSP File | Mô tả | Next.js Route | Priority |
-|---|----------|-------|---------------|----------|
-| 1 | `inputROrder.jsp` | Nhập đơn hàng | `/rorders/new` | P3 |
-| 2 | `editROrder.jsp` | Sửa đơn hàng | `/rorders/[id]/edit` | P3 |
-| 3 | `searchROrder.jsp` | Tìm đơn hàng | `/rorders` | P3 |
+## 2. MASTER (33 files)
+| # | JSP File | Mô tả |
+|----|----------|-------|
+| 1 | `master/editBank/editBank.jsp` | - |
+| 2 | `master/editCategory/editCategory.jsp` | - |
+| 3 | `master/editCustomer/editCustomer.jsp` | - |
+| 4 | `master/editCustomerRank/editCustomerRank.jsp` | - |
+| 5 | `master/editDiscount/editDiscount.jsp` | - |
+| 6 | `master/editProduct/editProduct.jsp` | - |
+| 7 | `master/editProductClass/editProductClass.jsp` | - |
+| 8 | `master/editProductSet/editProductSet.jsp` | - |
+| 9 | `master/editRack/editRack.jsp` | - |
+| 10 | `master/editRate/editRate.jsp` | - |
+| 11 | `master/editSupplier/editSupplier.jsp` | - |
+| 12 | `master/editTaxRate/editTaxRate.jsp` | - |
+| 13 | `master/editWarehouse/editWarehouse.jsp` | - |
+| 14 | `master/importZipCodeCSV/importZipCodeCSV.jsp` | - |
+| 15 | `master/searchBank/search.jsp` | - |
+| 16 | `master/searchCategory/search.jsp` | - |
+| 17 | `master/searchCustomer/search.jsp` | - |
+| 18 | `master/searchCustomerRank/search.jsp` | - |
+| 19 | `master/searchCustomerRankResultOutput/excel.jsp` | - |
+| 20 | `master/searchCustomerRankResultOutput/summary.jsp` | - |
+| 21 | `master/searchDiscount/search.jsp` | - |
+| 22 | `master/searchProduct/search.jsp` | - |
+| 23 | `master/searchProductClass/search.jsp` | - |
+| 24 | `master/searchProductSet/search.jsp` | - |
+| 25 | `master/searchRack/search.jsp` | - |
+| 26 | `master/searchRackResultOutput/excel.jsp` | - |
+| 27 | `master/searchRackResultOutput/resultList.jsp` | - |
+| 28 | `master/searchRate/search.jsp` | - |
+| 29 | `master/searchSupplier/search.jsp` | - |
+| 30 | `master/searchTaxRate/search.jsp` | - |
+| 31 | `master/searchWarehouse/search.jsp` | - |
+| 32 | `master/searchWarehouseResultOutput/excel.jsp` | - |
+| 33 | `master/searchWarehouseResultOutput/resultList.jsp` | - |
+
+## 2. MENU (1 files)
+| # | JSP File | Mô tả |
+|----|----------|-------|
+| 1 | `menu/menu.jsp` | - |
+
+## 2. PAYMENT (5 files)
+| # | JSP File | Mô tả |
+|----|----------|-------|
+| 1 | `payment/closePayment/closePayment.jsp` | - |
+| 2 | `payment/inputPayment/inputPayment.jsp` | - |
+| 3 | `payment/searchPayment/search.jsp` | - |
+| 4 | `payment/searchPaymentResultOutput/excel.jsp` | - |
+| 5 | `payment/searchPaymentResultOutput/resultList.jsp` | - |
+
+## 2. PORDER (7 files)
+| # | JSP File | Mô tả |
+|----|----------|-------|
+| 1 | `porder/inputPOrder/inputPOrder.jsp` | - |
+| 2 | `porder/makeOutPOrder/search.jsp` | - |
+| 3 | `porder/outputRecommendList/orderResult.jsp` | - |
+| 4 | `porder/outputRecommendList/outputRecommendList.jsp` | - |
+| 5 | `porder/searchPOrder/search.jsp` | - |
+| 6 | `porder/searchPOrderResultOutput/excel.jsp` | - |
+| 7 | `porder/searchPOrderResultOutput/resultList.jsp` | - |
+
+## 2. PURCHASE (4 files)
+| # | JSP File | Mô tả |
+|----|----------|-------|
+| 1 | `purchase/inputPurchase/inputPurchase.jsp` | - |
+| 2 | `purchase/searchPurchase/search.jsp` | - |
+| 3 | `purchase/searchPurchaseResultOutput/excel.jsp` | - |
+| 4 | `purchase/searchPurchaseResultOutput/resultList.jsp` | - |
+
+## 2. REPORT (3 files)
+| # | JSP File | Mô tả |
+|----|----------|-------|
+| 1 | `report/outputBalanceList/outputBalanceList.jsp` | - |
+| 2 | `report/referenceHistory/referenceHistory.jsp` | - |
+| 3 | `report/referenceMst/referenceMst.jsp` | - |
+
+## 2. RORDER (5 files)
+| # | JSP File | Mô tả |
+|----|----------|-------|
+| 1 | `rorder/importOnlineOrder/importOnlineOrder.jsp` | - |
+| 2 | `rorder/inputROrder/inputROrder.jsp` | - |
+| 3 | `rorder/searchROrder/search.jsp` | - |
+| 4 | `rorder/searchROrderResultOutput/excel.jsp` | - |
+| 5 | `rorder/searchROrderResultOutput/resultList.jsp` | - |
+
+## 2. SALES (8 files)
+| # | JSP File | Mô tả |
+|----|----------|-------|
+| 1 | `sales/inputSales/inputSales.jsp` | - |
+| 2 | `sales/outputInvoice/search.jsp` | - |
+| 3 | `sales/outputInvoiceResult/excel.jsp` | - |
+| 4 | `sales/outputInvoiceResult/resultList.jsp` | - |
+| 5 | `sales/outputSalesReport/search.jsp` | - |
+| 6 | `sales/searchSales/search.jsp` | - |
+| 7 | `sales/searchSalesResultOutput/excel.jsp` | - |
+| 8 | `sales/searchSalesResultOutput/resultList.jsp` | - |
+
+## 2. SETTING (13 files)
+| # | JSP File | Mô tả |
+|----|----------|-------|
+| 1 | `setting/changePassword/changePassword.jsp` | - |
+| 2 | `setting/company/company.jsp` | - |
+| 3 | `setting/editDept/editDept.jsp` | - |
+| 4 | `setting/editFileUpload/editFileUpload.jsp` | - |
+| 5 | `setting/editUser/editUser.jsp` | - |
+| 6 | `setting/editUser/editUserRole.jsp` | - |
+| 7 | `setting/news/news.jsp` | - |
+| 8 | `setting/searchDept/search.jsp` | - |
+| 9 | `setting/searchFileUpload/search.jsp` | - |
+| 10 | `setting/searchUser/search.jsp` | - |
+| 11 | `setting/setCategory/inputCategory.jsp` | - |
+| 12 | `setting/setSecurity/setSecurity.jsp` | - |
+| 13 | `setting/stock/stock.jsp` | - |
+
+## 2. STOCK (14 files)
+| # | JSP File | Mô tả |
+|----|----------|-------|
+| 1 | `stock/closeStock/closeStock.jsp` | - |
+| 2 | `stock/dispProductStockList/dispProductStockList.jsp` | - |
+| 3 | `stock/dispProductStockList/dispStockInfo.jsp` | - |
+| 4 | `stock/inputEntrustStock/inputEntrustStock.jsp` | - |
+| 5 | `stock/inputStock/inputStock.jsp` | - |
+| 6 | `stock/inputStockTransfer/inputStockTransfer.jsp` | - |
+| 7 | `stock/outputStockList/outputStockList.jsp` | - |
+| 8 | `stock/outputStockReport/outputStockReport.jsp` | - |
+| 9 | `stock/searchEntrustStock/search.jsp` | - |
+| 10 | `stock/searchEntrustStockResultOutput/excel.jsp` | - |
+| 11 | `stock/searchEntrustStockResultOutput/resultList.jsp` | - |
+| 12 | `stock/searchStock/search.jsp` | - |
+| 13 | `stock/searchStockResultOutput/excel.jsp` | - |
+| 14 | `stock/searchStockResultOutput/resultList.jsp` | - |
 
 ---
-
-## 4. BILL Screens (10 files)
-
-| # | JSP File | Mô tả | Next.js Route | Priority |
-|---|----------|-------|---------------|----------|
-| 1 | `billMake.jsp` | Tạo HĐ hàng loạt | `/invoices/generate` | **P1** |
-| 2 | `billMakeConfirm.jsp` | Xác nhận tạo HĐ | `/invoices/generate/confirm` | **P1** |
-| 3 | `searchBill.jsp` | Tìm HĐ | `/invoices` | **P1** |
-| 4 | `editBill.jsp` | Sửa HĐ | `/invoices/[id]/edit` | **P1** |
-| 5 | `billDetail.jsp` | Chi tiết HĐ | `/invoices/[id]` | **P1** |
-| 6 | `billClose.jsp` | Gạch nợ HĐ | `/invoices/[id]/close` | **P1** |
-| 7 | `billCancel.jsp` | Hủy HĐ | `/invoices/[id]/cancel` | **P1** |
-| 8 | `billHistory.jsp` | Lịch sử HĐ | `/invoices/[id]/history` | P2 |
-| 9 | `billReprint.jsp` | In lại HĐ | `/invoices/[id]/reprint` | P2 |
-| 10 | `billPreview.jsp` | Xem trước HĐ | `/invoices/[id]/preview` | P2 |
-
----
-
-## 5. DEPOSIT Screens (9 files)
-
-| # | JSP File | Mô tả | Next.js Route | Priority |
-|---|----------|-------|---------------|----------|
-| 1 | `inputDeposit.jsp` | Nhập phiếu thu | `/deposits/new` | **P1** |
-| 2 | `editDeposit.jsp` | Sửa phiếu thu | `/deposits/[id]/edit` | **P1** |
-| 3 | `searchDeposit.jsp` | Tìm phiếu thu | `/deposits` | **P1** |
-| 4 | `depositDetail.jsp` | Chi tiết thu | `/deposits/[id]` | **P1** |
-| 5 | `depositClose.jsp` | Gạch nợ | `/deposits/[id]/close` | **P1** |
-| 6 | `depositCancel.jsp` | Hủy phiếu thu | `/deposits/[id]/cancel` | **P1** |
-| 7 | `depositImport.jsp` | Import từ NH | `/deposits/import` | P2 |
-| 8 | `depositHistory.jsp` | Lịch sử thu | `/deposits/[id]/history` | P2 |
-| 9 | `depositList.jsp` | Danh sách thu | `/deposits/list` | P2 |
-
----
-
-## 6. STOCK Screens (14 files)
-
-| # | JSP File | Mô tả | Next.js Route | Priority |
-|---|----------|-------|---------------|----------|
-| 1 | `inputStock.jsp` | Nhập kho | `/stock/receive` | P2 |
-| 2 | `outputStock.jsp` | Xuất kho | `/stock/issue` | P2 |
-| 3 | `searchStock.jsp` | Tìm tồn kho | `/stock` | P2 |
-| 4 | `stockList.jsp` | Danh sách tồn | `/stock/list` | P2 |
-| 5 | `stockDetail.jsp` | Chi tiết tồn | `/stock/[productId]` | P2 |
-| 6 | `stockTake.jsp` | Kiểm kê | `/stock/take` | P2 |
-| 7 | `stockTakeInput.jsp` | Nhập kiểm kê | `/stock/take/input` | P2 |
-| 8 | `stockTakeConfirm.jsp` | Xác nhận kiểm kê | `/stock/take/confirm` | P2 |
-| 9 | `eadList.jsp` | Lịch sử NX | `/stock/history` | P3 |
-| 10 | `eadDetail.jsp` | Chi tiết NX | `/stock/history/[id]` | P3 |
-| 11 | `stockAlert.jsp` | Cảnh báo tồn | `/stock/alerts` | P2 |
-| 12 | `stockMove.jsp` | Chuyển kho | `/stock/move` | P3 |
-| 13 | `stockAdjust.jsp` | Điều chỉnh tồn | `/stock/adjust` | P3 |
-| 14 | `pickingList.jsp` | Phiếu picking | `/stock/picking` | P2 |
-
----
-
-## 7. DAILY/MONTHLY Screens (17 files)
-
-### 7.1. Daily (日次処理) - 7 screens
-
-| # | JSP File | Mô tả | Next.js Route | Priority |
-|---|----------|-------|---------------|----------|
-| 1 | `dailyClosing.jsp` | Chốt ngày | `/closing/daily` | P2 |
-| 2 | `dailyClosingConfirm.jsp` | Xác nhận chốt ngày | `/closing/daily/confirm` | P2 |
-| 3 | `dailyReport.jsp` | Báo cáo ngày | `/reports/daily` | P2 |
-| 4 | `dailySalesList.jsp` | DS bán hàng ngày | `/reports/daily/sales` | P2 |
-| 5 | `dailyDepositList.jsp` | DS thu tiền ngày | `/reports/daily/deposits` | P2 |
-| 6 | `dailyCheck.jsp` | Kiểm tra ngày | `/closing/daily/check` | P2 |
-| 7 | `dailyImport.jsp` | Import ngày | `/closing/daily/import` | P3 |
-
-### 7.2. Monthly (月次処理) - 10 screens
-
-| # | JSP File | Mô tả | Next.js Route | Priority |
-|---|----------|-------|---------------|----------|
-| 1 | `monthlyClosing.jsp` | Chốt tháng | `/closing/monthly` | **P1** |
-| 2 | `monthlyClosingConfirm.jsp` | Xác nhận chốt tháng | `/closing/monthly/confirm` | **P1** |
-| 3 | `monthlyBill.jsp` | Tạo HĐ tháng | `/invoices/monthly` | **P1** |
-| 4 | `monthlyBillConfirm.jsp` | Xác nhận tạo HĐ | `/invoices/monthly/confirm` | **P1** |
-| 5 | `monthlyReport.jsp` | Báo cáo tháng | `/reports/monthly` | P2 |
-| 6 | `monthlySalesReport.jsp` | BC doanh thu tháng | `/reports/monthly/sales` | P2 |
-| 7 | `monthlyDepositReport.jsp` | BC thu tiền tháng | `/reports/monthly/deposits` | P2 |
-| 8 | `monthlyReceivable.jsp` | BC công nợ | `/reports/monthly/receivables` | P2 |
-| 9 | `monthlyCheck.jsp` | Kiểm tra tháng | `/closing/monthly/check` | P2 |
-| 10 | `monthlyUnlock.jsp` | Mở khóa tháng | `/closing/monthly/unlock` | P3 |
-
----
-
-## 8. REPORT Screens (11 files)
-
-| # | JSP File | Mô tả | Next.js Route | Priority |
-|---|----------|-------|---------------|----------|
-| 1 | `salesReport.jsp` | BC bán hàng | `/reports/sales` | P2 |
-| 2 | `depositReport.jsp` | BC thu tiền | `/reports/deposits` | P2 |
-| 3 | `receivableReport.jsp` | BC công nợ | `/reports/receivables` | P2 |
-| 4 | `stockReport.jsp` | BC tồn kho | `/reports/stock` | P2 |
-| 5 | `customerReport.jsp` | BC khách hàng | `/reports/customers` | P3 |
-| 6 | `productReport.jsp` | BC sản phẩm | `/reports/products` | P3 |
-| 7 | `profitReport.jsp` | BC lợi nhuận | `/reports/profit` | P3 |
-| 8 | `rankingReport.jsp` | BC xếp hạng | `/reports/ranking` | P3 |
-| 9 | `annualReport.jsp` | BC năm | `/reports/annual` | P3 |
-| 10 | `customReport.jsp` | BC tùy chỉnh | `/reports/custom` | P3 |
-| 11 | `reportBuilder.jsp` | Tạo BC | `/reports/builder` | P3 |
-
----
-
-## 9. OTHER Screens (19 files)
-
-### 9.1. Login & Menu - 2 screens
-
-| # | JSP File | Mô tả | Next.js Route | Priority |
-|---|----------|-------|---------------|----------|
-| 1 | `login.jsp` | Đăng nhập | `/login` | **P1** |
-| 2 | `menu.jsp` | Menu chính | `/dashboard` | **P1** |
-
-### 9.2. Estimate - 3 screens (covered in section 3.2)
-
-### 9.3. RO Order - 3 screens (covered in section 3.3)
-
-### 9.4. Purchase - 4 screens
-
-| # | JSP File | Mô tả | Next.js Route | Priority |
-|---|----------|-------|---------------|----------|
-| 1 | `inputPurchase.jsp` | Nhập mua hàng | `/purchases/new` | P3 |
-| 2 | `editPurchase.jsp` | Sửa mua hàng | `/purchases/[id]/edit` | P3 |
-| 3 | `searchPurchase.jsp` | Tìm mua hàng | `/purchases` | P3 |
-| 4 | `purchaseList.jsp` | DS mua hàng | `/purchases/list` | P3 |
-
-### 9.5. POrder - 3 screens
-
-| # | JSP File | Mô tả | Next.js Route | Priority |
-|---|----------|-------|---------------|----------|
-| 1 | `inputPOrder.jsp` | Nhập đặt hàng | `/porders/new` | P3 |
-| 2 | `editPOrder.jsp` | Sửa đặt hàng | `/porders/[id]/edit` | P3 |
-| 3 | `searchPOrder.jsp` | Tìm đặt hàng | `/porders` | P3 |
-
-### 9.6. Payment - 4 screens
-
-| # | JSP File | Mô tả | Next.js Route | Priority |
-|---|----------|-------|---------------|----------|
-| 1 | `inputPayment.jsp` | Thanh toán | `/payments/new` | P3 |
-| 2 | `searchPayment.jsp` | Tìm thanh toán | `/payments` | P3 |
-| 3 | `paymentSchedule.jsp` | Lịch thanh toán | `/payments/schedule` | P3 |
-| 4 | `paymentHistory.jsp` | Lịch sử thanh toán | `/payments/history` | P3 |
-
----
-
-## 10. Summary Statistics
-
-### By Priority
-
-| Priority | Count | Percentage |
-|----------|-------|------------|
-| **P1 (Critical)** | 48 | 18% |
-| **P2 (High)** | 85 | 32% |
-| **P3 (Medium/Low)** | 135 | 50% |
-| **Total** | **268** | **100%** |
-
-### By Module
-
-| Module | Screens | Priority |
-|--------|---------|----------|
-| master | 39 | Mixed |
-| sales | 15 | **High** |
-| bill | 10 | **Critical** |
-| deposit | 9 | **Critical** |
-| stock | 14 | High |
-| daily/monthly | 17 | High |
-| report | 11 | Medium |
-| setting | 12 | Medium |
-| purchase/porder | 10 | Low |
-| estimate/rorder | 12 | Low |
-| others | 5 | Mixed |
-
----
-
-## 11. Next.js Route Structure Proposal
-
-```
-app/
-├── (auth)/
-│   └── login/page.tsx
-├── (dashboard)/
-│   ├── dashboard/page.tsx
-│   ├── customers/
-│   │   ├── page.tsx (search)
-│   │   ├── new/page.tsx
-│   │   └── [id]/
-│   │       ├── page.tsx (detail)
-│   │       ├── edit/page.tsx
-│   │       └── history/page.tsx
-│   ├── products/
-│   │   ├── page.tsx
-│   │   ├── new/page.tsx
-│   │   └── [id]/edit/page.tsx
-│   ├── sales-orders/
-│   │   ├── page.tsx
-│   │   ├── new/page.tsx
-│   │   └── [id]/
-│   │       ├── page.tsx
-│   │       ├── edit/page.tsx
-│   │       └── print/page.tsx
-│   ├── invoices/
-│   │   ├── page.tsx
-│   │   ├── generate/page.tsx
-│   │   └── [id]/
-│   │       ├── page.tsx
-│   │       ├── close/page.tsx
-│   │       └── print/page.tsx
-│   ├── deposits/
-│   │   ├── page.tsx
-│   │   ├── new/page.tsx
-│   │   └── [id]/
-│   │       ├── page.tsx
-│   │       └── close/page.tsx
-│   ├── stock/
-│   │   ├── page.tsx
-│   │   ├── receive/page.tsx
-│   │   ├── issue/page.tsx
-│   │   └── take/page.tsx
-│   ├── closing/
-│   │   ├── daily/page.tsx
-│   │   └── monthly/page.tsx
-│   ├── reports/
-│   │   ├── sales/page.tsx
-│   │   ├── deposits/page.tsx
-│   │   └── receivables/page.tsx
-│   └── admin/
-│       ├── users/page.tsx
-│       ├── roles/page.tsx
-│       ├── tax-rates/page.tsx
-│       └── settings/page.tsx
-```
-
----
-
 *Generated from SalesCube JSP analysis*

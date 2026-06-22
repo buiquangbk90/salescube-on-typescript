@@ -1,5 +1,7 @@
 # Kế hoạch migrate SalesCube sang Full TypeScript
 
+> **Lưu ý:** Kế hoạch này dựa trên phân tích source code legacy. Chi tiết reverse-engineered được ghi trong `01-module-inventory.md`, `02-entity-list.md`, `03-business-rules.md`, `05-screen-inventory.md`, `07-db-schema.md`, `08-api-contracts.md`, `09-service-inventory.md` và `10-batch-jobs.md`.
+
 ## 1. Mục tiêu
 
 Migrate hệ thống SalesCube từ source legacy Java/WebApp sang hệ thống mới viết bằng TypeScript toàn phần.

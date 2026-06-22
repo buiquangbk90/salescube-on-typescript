@@ -1,6 +1,7 @@
 # SalesCube Glossary (Thuật ngữ)
 
 > Từ điển thuật ngữ tiếng Nhật - Tiếng Việt cho hệ thống SalesCube
+> Thuật ngữ được tổng hợp từ source code Java (entity, constants, action package) và JSP.
 
 ---
 

@@ -1,373 +1,719 @@
 # SalesCube - Entity List (Danh sách Entity/Table)
-
-> Tài liệu này liệt kê toàn bộ entity và database table của SalesCube.
-> **Source:** `workspace/SalesCube/src/main/java/jp/co/arkinfosys/entity/`
-
----
-
-## 1. MASTER DATA Entities (Entity dữ liệu gốc)
-
-### 1.1. Customer (得意先マスタ)
-
-**Table:** `CUSTOMER_MST` | **Entity:** `Customer.java` | **File:** `@/workspace/SalesCube/src/main/java/jp/co/arkinfosys/entity/Customer.java:1-159`
-
-| Field | Type | Mô tả | Notes |
-|-------|------|-------|-------|
-| customerCode | String | Mã khách hàng | PK |
-| customerName | String | Tên khách hàng | - |
-| customerKana | String | Tên Katakana | Dùng tìm kiếm |
-| customerOfficeName | String | Tên văn phòng | - |
-| customerAbbr | String | Tên viết tắt | - |
-| customerDeptName | String | Tên bộ phận | - |
-| customerZipCode | String | Mã bưu điện | - |
-| customerAddress1/2 | String | Địa chỉ | - |
-| customerPcName | String | Người liên hệ | - |
-| customerPcPreCategory | String | Xưng hô (様/殿) | - |
-| customerTel/Fax/Email | String | Liên lạc | - |
-| customerBusinessCategory | String | Ngành nghề | - |
-| customerRankCategory | String | Xếp hạng KH | - |
-| taxShiftCategory | String | Cách tính thuế | 内税/外税 |
-| rate | BigDecimal | Tỷ lệ chiết khấu | - |
-| maxCreditLimit | BigDecimal | Hạn mức tín dụng | - |
-| lastCutoffDate | Date | Ngày chốt cuối | - |
-| cutoffGroup | String | Nhóm chốt | - |
-| paybackTypeCategory | String | Hình thức thanh toán | - |
-| paybackCycleCategory | String | Chu kỳ thanh toán | - |
-| taxFractCategory | String | Làm tròn thuế | - |
-| priceFractCategory | String | Làm tròn tiền | - |
-| billPrintUnit | String | Đơn vị in hóa đơn | - |
-| firstSalesDate | Date | Ngày mua đầu tiên | - |
-| lastSalesDate | Date | Ngày mua cuối | - |
-| salesPriceTotal | BigDecimal | Tổng doanh thu | - |
-| tanCd/nTanCd/kTanCd | String | Mã người phụ trách | - |
-| ginkno/ginknm/sitenm | String | Thông tin ngân hàng | - |
-| kozsyu/kozano/kozame | String | Thông tin tài khoản | - |
+> Tài liệu này liệt kê toàn bộ entity và bảng DB từ source code.
+> **Source:** `/Users/peocandy/Project/salescube-on-typescript/SalesCube/WEB/SalesCube/src/main/java/jp/co/arkinfosys/entity`
+> **Lưu ý:** Bảng DB thực tế trong `CREATE.sql` có hậu tố `_XXXXX` (ví dụ `CUSTOMER_MST_XXXXX`) là placeholder cho instance/tenant. Entity Java tham chiếu bảng không có `_XXXXX`.
 
 ---
+## 1. Tổng hợp Entity
+- **Tổng số entity class:** 76
+- **Tổng số bảng/view DB:** 129
 
-### 1.2. Product (商品マスタ)
+## 2. Master Entities
+| Entity | Table (entity) | SQL Table (with suffix) | Mô tả |
+|--------|----------------|--------------------------|-------|
+| `Bank` | `BANK_MST` | `BANK_MST_XXXXX` | - |
+| `Category` | `CATEGORY_MST` | `CATEGORY_MST_XXXXX` | - |
+| `Customer` | `CUSTOMER_MST` | `CUSTOMER_MST_XXXXX` | - |
+| `CustomerRank` | `CUSTOMER_RANK_MST` | `CUSTOMER_RANK_MST_XXXXX` | - |
+| `Delivery` | `DELIVERY_MST` | `DELIVERY_MST_XXXXX` | - |
+| `Dept` | `DEPT_MST` | `DEPT_MST_XXXXX` | - |
+| `DetailDispItem` | `-` | `-` | - |
+| `Discount` | `DISCOUNT_MST` | `DISCOUNT_MST_XXXXX` | - |
+| `Domain` | `DOMAIN_MST` | `DOMAIN_MST_XXXXX` | - |
+| `FileInfo` | `FILE_INFO` | `FILE_INFO_XXXXX` | - |
+| `GrantRole` | `GRANT_ROLE` | `GRANT_ROLE_XXXXX` | - |
+| `InitMst` | `INIT_MST` | `INIT_MST_XXXXX` | - |
+| `Menu` | `-` | `-` | - |
+| `Mine` | `-` | `-` | - |
+| `Product` | `PRODUCT_MST` | `PRODUCT_MST_XXXXX` | - |
+| `ProductClass` | `PRODUCT_CLASS_MST` | `PRODUCT_CLASS_MST_XXXXX` | - |
+| `ProductSet` | `PRODUCT_SET_MST` | `PRODUCT_SET_MST_XXXXX` | - |
+| `Rack` | `RACK_MST` | `RACK_MST_XXXXX` | - |
+| `Rate` | `RATE_MST` | `RATE_MST_XXXXX` | - |
+| `ReportTemplate` | `-` | `-` | - |
+| `Role` | `-` | `-` | - |
+| `SeqMaker` | `-` | `-` | - |
+| `Supplier` | `SUPPLIER_MST` | `SUPPLIER_MST_XXXXX` | - |
+| `TaxRate` | `TAX_RATE_MST` | `TAX_RATE_MST_XXXXX` | - |
+| `User` | `USER_MST` | `USER_MST_XXXXX` | - |
+| `Warehouse` | `WAREHOUSE_MST` | `WAREHOUSE_MST_XXXXX` | - |
+| `Zip` | `-` | `-` | - |
 
-**Table:** `PRODUCT_MST` | **Entity:** `Product.java` | **File:** `@/workspace/SalesCube/src/main/java/jp/co/arkinfosys/entity/Product.java:1-328`
+## 3. Transaction Entities
+| Entity | Table (entity) | SQL Table (with suffix) | Mô tả |
+|--------|----------------|--------------------------|-------|
+| `AptBalanceTrn` | `APT_BALANCE_TRN` | `APT_BALANCE_TRN_XXXXX` | - |
+| `ArtBalance` | `ART_BALANCE_TRN` | `ART_BALANCE_TRN_XXXXX` | - |
+| `BankDepositRel` | `BANK_DEPOSIT_REL` | `BANK_DEPOSIT_REL_XXXXX` | - |
+| `BankDepositWork` | `-` | `-` | - |
+| `Bill` | `BILL_TRN` | `BILL_TRN_XXXXX` | - |
+| `CategoryTrn` | `CATEGORY_TRN` | `CATEGORY_TRN_XXXXX` | - |
+| `Delivery` | `DELIVERY_MST` | `DELIVERY_MST_XXXXX` | - |
+| `DeliveryDepositRel` | `DELIVERY_DEPOSIT_REL` | `DELIVERY_DEPOSIT_REL_XXXXX` | - |
+| `DeliveryDepositWork` | `-` | `-` | - |
+| `DepositLine` | `DEPOSIT_LINE_TRN` | `DEPOSIT_LINE_TRN_XXXXX` | - |
+| `DepositSlip` | `DEPOSIT_SLIP_TRN` | `DEPOSIT_SLIP_TRN_XXXXX` | - |
+| `DiscountTrn` | `DISCOUNT_TRN` | `DISCOUNT_TRN_XXXXX` | - |
+| `EadLineTrn` | `EAD_LINE_TRN` | `EAD_LINE_TRN_XXXXX` | - |
+| `EadSlipTrn` | `EAD_SLIP_TRN` | `EAD_SLIP_TRN_XXXXX` | - |
+| `EntrustEadLineTrn` | `ENTRUST_EAD_LINE_TRN` | `ENTRUST_EAD_LINE_TRN_XXXXX` | - |
+| `EntrustEadSlipTrn` | `ENTRUST_EAD_SLIP_TRN` | `ENTRUST_EAD_SLIP_TRN_XXXXX` | - |
+| `EstimateLineTrn` | `ESTIMATE_LINE_TRN` | `-` | - |
+| `EstimateSheetTrn` | `ESTIMATE_SHEET_TRN` | `-` | - |
+| `InvoiceDataWork` | `-` | `-` | - |
+| `OnlineOrderWork` | `-` | `-` | - |
+| `PaymentLineTrn` | `PAYMENT_LINE_TRN` | `-` | - |
+| `PaymentSlipTrn` | `PAYMENT_SLIP_TRN` | `PAYMENT_SLIP_TRN_XXXXX` | - |
+| `PickingLine` | `PICKING_LINE_TRN` | `PICKING_LINE_TRN_XXXXX` | - |
+| `PickingList` | `PICKING_LIST_TRN` | `PICKING_LIST_TRN_XXXXX` | - |
+| `PoLineTrn` | `PO_LINE_TRN` | `PO_LINE_TRN_XXXXX` | - |
+| `PoSlipTrn` | `PO_SLIP_TRN` | `PO_SLIP_TRN_XXXXX` | - |
+| `ProductStockInfo` | `-` | `-` | - |
+| `ProductStockTrn` | `PRODUCT_STOCK_TRN` | `PRODUCT_STOCK_TRN_XXXXX` | - |
+| `RateTrn` | `RATE_TRN` | `RATE_TRN_XXXXX` | - |
+| `RoLineTrn` | `RO_LINE_TRN` | `-` | - |
+| `RoSlipTrn` | `RO_SLIP_TRN` | `-` | - |
+| `SalesLineTrn` | `SALES_LINE_TRN` | `SALES_LINE_TRN_XXXXX` | - |
+| `SalesSlipTrn` | `SALES_SLIP_TRN` | `SALES_SLIP_TRN_XXXXX` | - |
+| `SupplierLineTrn` | `SUPPLIER_LINE_TRN` | `-` | - |
+| `SupplierSlipTrn` | `SUPPLIER_SLIP_TRN` | `-` | - |
 
-| Field | Type | Mô tả | Notes |
-|-------|------|-------|-------|
-| productCode | String | Mã sản phẩm | PK |
-| productName | String | Tên sản phẩm | - |
-| productKana | String | Tên Katakana | - |
-| onlinePcode | String | Mã online | - |
-| supplierPcode | String | Mã NCC | - |
-| supplierCode | String | Mã nhà cung cấp | FK |
-| rackCode | String | Mã kệ hàng | FK |
-| supplierPriceYen/Dol | BigDecimal | Giá mua | - |
-| retailPrice | BigDecimal | Giá bán lẻ 1 | - |
-| retailStartDate/EndDate | Date | Thời hạn giá 1 | - |
-| retailPrice2/3 | BigDecimal | Giá bán lẻ 2,3 | - |
-| webRetailPrice | BigDecimal | Giá web | - |
-| soRate | BigDecimal | Tỷ lệ SO | - |
-| unitCategory | String | Đơn vị tính | - |
-| packQuantity | Short | Số lượng/đóng gói | - |
-| janPcode | String | Mã JAN (Barcode) | - |
-| width/depth/height/weight/length | Float | Kích thước | - |
-| poLot | BigDecimal | Lot đặt hàng | - |
-| leadTime | Integer | Thời gian chờ | - |
-| mineSafetyStock | Integer | Tồn kho an toàn | - |
-| maxStockNum | Integer | Tồn kho tối đa | - |
-| fractCategory | String | Phân loại làm tròn | - |
-| taxCategory | String | Phân loại thuế | - |
-| stockCtlCategory | String | Kiểm soát tồn kho | - |
-| productCategory | String | Phân loại SP | - |
-| product1/2/3 | String | Phân loại chi tiết | - |
-| productRank | String | Xếp hạng SP | - |
-| productStatusCategory | String | Trạng thái SP | - |
-| discardDate | Date | Ngày ngừng bán | - |
-| remarks | String | Ghi chú | - |
+## 4. History/Work/Rel/Support Entities
+| Entity | Table (entity) | SQL Table (with suffix) | Mô tả |
+|--------|----------------|--------------------------|-------|
+| `ArtBalance` | `ART_BALANCE_TRN` | `ART_BALANCE_TRN_XXXXX` | - |
+| `BankDepositRel` | `BANK_DEPOSIT_REL` | `BANK_DEPOSIT_REL_XXXXX` | - |
+| `BankDepositWork` | `-` | `-` | - |
+| `CategoryTrn` | `CATEGORY_TRN` | `CATEGORY_TRN_XXXXX` | - |
+| `CloseCustomer` | `-` | `-` | - |
+| `CustomerAndDate` | `-` | `-` | - |
+| `CustomerHist` | `CUSTOMER_MST_HIST` | `CUSTOMER_MST_HIST_XXXXX` | - |
+| `CustomerRel` | `CUSTOMER_REL` | `CUSTOMER_REL_XXXXX` | - |
+| `DeliveryBillHist` | `DELIVERY_MST_HIST` | `DELIVERY_MST_HIST_XXXXX` | - |
+| `DeliveryDepositRel` | `DELIVERY_DEPOSIT_REL` | `DELIVERY_DEPOSIT_REL_XXXXX` | - |
+| `DeliveryDepositWork` | `-` | `-` | - |
+| `DeliveryHist` | `DELIVERY_MST_HIST` | `DELIVERY_MST_HIST_XXXXX` | - |
+| `DepositLineHist` | `DEPOSIT_LINE_TRN_HIST` | `DEPOSIT_LINE_TRN_HIST_XXXXX` | - |
+| `DepositSlipHist` | `DEPOSIT_SLIP_TRN_HIST` | `DEPOSIT_SLIP_TRN_HIST_XXXXX` | - |
+| `DiscountRel` | `DISCOUNT_REL` | `DISCOUNT_REL_XXXXX` | - |
+| `DiscountRelHist` | `DISCOUNT_REL_HIST` | `DISCOUNT_REL_HIST_XXXXX` | - |
+| `DiscountTrn` | `DISCOUNT_TRN` | `DISCOUNT_TRN_XXXXX` | - |
+| `InvoiceDataWork` | `-` | `-` | - |
+| `OnlineOrderRel` | `ONLINE_ORDER_REL` | `ONLINE_ORDER_REL_XXXXX` | - |
+| `OnlineOrderWork` | `-` | `-` | - |
+| `ProductHist` | `PRODUCT_MST_HIST` | `PRODUCT_MST_HIST_XXXXX` | - |
+| `Rate` | `RATE_MST` | `RATE_MST_XXXXX` | - |
+| `RateTrn` | `RATE_TRN` | `RATE_TRN_XXXXX` | - |
 
----
+## 5. Core Entity Fields (trích xuất từ source)
 
-### 1.3. User (ユーザーマスタ)
-
-**Table:** `USER_MST` | **Entity:** `User.java`
-
+### 5.1. Customer (`CUSTOMER_MST`)
 | Field | Type | Mô tả |
 |-------|------|-------|
-| userId | String | Mã người dùng | PK |
-| nameKnj | String | Tên Hán tự | - |
-| nameKana | String | Tên Katakana | - |
-| deptId | String | Mã phòng ban | FK |
-| email | String | Email | - |
-| password | String | Mật khẩu (hash) | - |
+| `customerCode` | `String` | - |
+| `customerName` | `String` | - |
+| `customerKana` | `String` | - |
+| `customerOfficeName` | `String` | - |
+| `customerOfficeKana` | `String` | - |
+| `customerAbbr` | `String` | - |
+| `customerDeptName` | `String` | - |
+| `customerZipCode` | `String` | - |
+| `customerAddress1` | `String` | - |
+| `customerAddress2` | `String` | - |
+| `customerPcPost` | `String` | - |
+| `customerPcName` | `String` | - |
+| `customerPcKana` | `String` | - |
+| `customerPcPreCategory` | `String` | - |
+| `customerTel` | `String` | - |
+| `customerFax` | `String` | - |
+| `customerEmail` | `String` | - |
+| `customerUrl` | `String` | - |
+| `customerBusinessCategory` | `String` | - |
+| `customerJobCategory` | `String` | - |
+| `customerRoCategory` | `String` | - |
+| `customerRankCategory` | `String` | - |
+| `customerUpdFlag` | `String` | - |
+| `salesCmCategory` | `String` | - |
+| `taxShiftCategory` | `String` | - |
+| `rate` | `BigDecimal` | - |
+| `maxCreditLimit` | `BigDecimal` | - |
+| `lastCutoffDate` | `Date` | - |
+| `cutoffGroup` | `String` | - |
+| `paybackTypeCategory` | `String` | - |
+| `paybackCycleCategory` | `String` | - |
+| `taxFractCategory` | `String` | - |
+| `priceFractCategory` | `String` | - |
+| `billPrintUnit` | `String` | - |
+| `billDatePrint` | `String` | - |
+| `tempDeliverySlipFlag` | `String` | - |
+| `paymentName` | `String` | - |
+| `remarks` | `String` | - |
+| `firstSalesDate` | `Date` | - |
+| `lastSalesDate` | `Date` | - |
+| `salesPriceTotal` | `BigDecimal` | - |
+| `salesPriceLsm` | `BigDecimal` | - |
+| `commentData` | `String` | - |
+| `customerPcPreCategoryName` | `String` | - |
+| `categoryId4` | `Integer` | - |
+| `lastSalesCutoffDate` | `Date` | - |
 
----
-
-### 1.4. Category (区分マスタ)
-
-**Table:** `CATEGORY_MST` | **Entity:** `Category.java`
-
+### 5.1. Product (`PRODUCT_MST`)
 | Field | Type | Mô tả |
 |-------|------|-------|
-| categoryId | String | Mã phân loại | PK |
-| categoryCode | String | Mã code | - |
-| categoryName | String | Tên phân loại | - |
+| `productCode` | `String` | - |
+| `productName` | `String` | - |
+| `productKana` | `String` | - |
+| `onlinePcode` | `String` | - |
+| `supplierPcode` | `String` | - |
+| `supplierCode` | `String` | - |
+| `rackCode` | `String` | - |
+| `supplierPriceYen` | `BigDecimal` | - |
+| `supplierPriceDol` | `BigDecimal` | - |
+| `retailPrice` | `BigDecimal` | - |
+| `soRate` | `BigDecimal` | - |
+| `unitCategory` | `String` | - |
+| `packQuantity` | `Short` | - |
+| `janPcode` | `String` | - |
+| `width` | `Float` | - |
+| `widthUnitSizeCategory` | `String` | - |
+| `depth` | `Float` | - |
+| `depthUnitSizeCategory` | `String` | - |
+| `height` | `Float` | - |
+| `heightUnitSizeCategory` | `String` | - |
+| `weight` | `Float` | - |
+| `weightUnitSizeCategory` | `String` | - |
+| `length` | `Float` | - |
+| `lengthUnitSizeCategory` | `String` | - |
+| `poLot` | `BigDecimal` | - |
+| `lotUpdFlag` | `Short` | - |
+| `leadTime` | `Integer` | - |
+| `poNum` | `Integer` | - |
+| `poUpdFlag` | `Short` | - |
+| `mineSafetyStock` | `Integer` | - |
+| `mineSafetyStockUpdFlag` | `Short` | - |
+| `entrustSafetyStock` | `Integer` | - |
+| `salesStandardDeviation` | `BigDecimal` | - |
+| `avgShipCount` | `Integer` | - |
+| `maxStockNum` | `Integer` | - |
+| `stockUpdFlag` | `Short` | - |
+| `termShipNum` | `Integer` | - |
+| `maxPoNum` | `Integer` | - |
+| `maxPoUpdFlag` | `Short` | - |
+| `fractCategory` | `String` | - |
+| `taxCategory` | `String` | - |
+| `stockCtlCategory` | `String` | - |
+| `stockAssesCategory` | `String` | - |
+| `productCategory` | `String` | - |
+| `product1` | `String` | - |
+| `product2` | `String` | - |
+| `product3` | `String` | - |
+| `roMaxNum` | `Short` | - |
+| `productRank` | `String` | - |
+| `setTypeCategory` | `String` | - |
+| `productStatusCategory` | `String` | - |
+| `productStockCategory` | `String` | - |
+| `productPurvayCategory` | `String` | - |
+| `productStandardCategory` | `String` | - |
+| `coreNum` | `String` | - |
+| `num1` | `Short` | - |
+| `num2` | `Short` | - |
+| `num3` | `Short` | - |
+| `num4` | `Short` | - |
+| `num5` | `Short` | - |
+| `dec1` | `Float` | - |
+| `dec2` | `Float` | - |
+| `dec3` | `Float` | - |
+| `dec4` | `Float` | - |
+| `dec5` | `Float` | - |
+| `discardDate` | `Date` | - |
+| `remarks` | `String` | - |
+| `eadRemarks` | `String` | - |
+| `commentData` | `String` | - |
+| `lastRoDate` | `Date` | - |
 
----
-
-### 1.5. TaxRate (税率マスタ)
-
-**Table:** `TAX_RATE_MST` | **Entity:** `TaxRate.java`
-
+### 5.1. SalesSlipTrn (`SALES_SLIP_TRN`)
 | Field | Type | Mô tả |
 |-------|------|-------|
-| taxType | String | Loại thuế | PK |
-| startDate | Date | Ngày bắt đầu | PK |
-| taxRate | BigDecimal | Thuế suất | - |
-| taxShiftCategory | String | Cách tính thuế | - |
+| `salesSlipId` | `Integer` | - |
+| `status` | `String` | - |
+| `salesAnnual` | `Short` | - |
+| `salesMonthly` | `Short` | - |
+| `salesYm` | `Integer` | - |
+| `roSlipId` | `Integer` | - |
+| `billId` | `Integer` | - |
+| `salesBillId` | `Integer` | - |
+| `billDate` | `Date` | - |
+| `billCutoffGroup` | `String` | - |
+| `billCutoffDate` | `Date` | - |
+| `billCutoffPdate` | `Timestamp` | - |
+| `salesDate` | `Date` | - |
+| `deliveryDate` | `Date` | - |
+| `receptNo` | `String` | - |
+| `customerSlipNo` | `String` | - |
+| `salesCmCategory` | `String` | - |
+| `salesCutoffDate` | `Date` | - |
+| `salesCutoffPdate` | `Timestamp` | - |
+| `userId` | `String` | - |
+| `userName` | `String` | - |
+| `remarks` | `String` | - |
+| `pickingRemarks` | `String` | - |
+| `dcCategory` | `String` | - |
+| `dcName` | `String` | - |
+| `dcTimezoneCategory` | `String` | - |
+| `dcTimezone` | `String` | - |
+| `customerCode` | `String` | - |
+| `customerName` | `String` | - |
+| `customerRemarks` | `String` | - |
+| `customerCommentData` | `String` | - |
+| `deliveryCode` | `String` | - |
+| `deliveryName` | `String` | - |
+| `deliveryKana` | `String` | - |
+| `deliveryOfficeName` | `String` | - |
+| `deliveryOfficeKana` | `String` | - |
+| `deliveryDeptName` | `String` | - |
+| `deliveryZipCode` | `String` | - |
+| `deliveryAddress1` | `String` | - |
+| `deliveryAddress2` | `String` | - |
+| `deliveryPcName` | `String` | - |
+| `deliveryPcKana` | `String` | - |
+| `deliveryPcPreCategory` | `String` | - |
+| `deliveryPcPre` | `String` | - |
+| `deliveryTel` | `String` | - |
+| `deliveryFax` | `String` | - |
+| `deliveryEmail` | `String` | - |
+| `deliveryUrl` | `String` | - |
+| `baCode` | `String` | - |
+| `baName` | `String` | - |
+| `baKana` | `String` | - |
+| `baOfficeName` | `String` | - |
+| `baOfficeKana` | `String` | - |
+| `baDeptName` | `String` | - |
+| `baZipCode` | `String` | - |
+| `baAddress1` | `String` | - |
+| `baAddress2` | `String` | - |
+| `baPcName` | `String` | - |
+| `baPcKana` | `String` | - |
+| `baPcPreCategory` | `String` | - |
+| `baPcPre` | `String` | - |
+| `baTel` | `String` | - |
+| `baFax` | `String` | - |
+| `baEmail` | `String` | - |
+| `baUrl` | `String` | - |
+| `taxShiftCategory` | `String` | - |
+| `ctaxPriceTotal` | `BigDecimal` | - |
+| `ctaxRate` | `BigDecimal` | - |
+| `priceTotal` | `BigDecimal` | - |
+| `gmTotal` | `BigDecimal` | - |
+| `codSc` | `String` | - |
+| `billPrintCount` | `Integer` | - |
+| `deliveryPrintCount` | `Integer` | - |
+| `tempDeliveryPrintCount` | `Integer` | - |
+| `shippingPrintCount` | `Integer` | - |
+| `siPrintCount` | `Integer` | - |
+| `adlabel` | `String` | - |
+| `disclaimer` | `String` | - |
+| `creFunc` | `String` | - |
+| `creDatetm` | `Timestamp` | - |
+| ... | ... | +27 fields |
 
-**Business Rule:**
-- Báo chí: 8%
-- Sách/Quảng cáo: 10%
-
----
-
-### 1.6. Other Masters
-
-| Entity | Table | Mô tả |
-|--------|-------|-------|
-| Bank | `BANK_MST` | Ngân hàng |
-| Supplier | `SUPPLIER_MST` | Nhà cung cấp |
-| Rack | `RACK_MST` | Kệ hàng |
-| Department | `DEPT_MST` | Phòng ban |
-| CustomerRank | `CUSTOMER_RANK_MST` | Xếp hạng KH |
-
----
-
-## 2. TRANSACTION Entities (Giao dịch)
-
-### 2.1. SalesSlipTrn (売上伝票)
-
-**Table:** `SALES_SLIP_TRN` / `SALES_SLIP_TRN_HIST` | **Entity:** `SalesSlipTrn.java` | **File:** `@/workspace/SalesCube/src/main/java/jp/co/arkinfosys/entity/SalesSlipTrn.java:1-859`
-
-**Constants:**
-- `STATUS_INIT = "0"` | `STATUS_FINISH = "9"`
-- `TYPE_SALES = "0"` | `TYPE_NEWS = "1"` | `TYPE_WEB = "2"`
-
-| Field | Type | Mô tả | Notes |
-|-------|------|-------|-------|
-| salesSlipId | Integer | ID | PK, Auto |
-| status | String | Trạng thái | 0=Init, 9=Finish |
-| salesType | String | Loại | 0=Sales, 1=News, 2=Web |
-| salesAnnual/Monthly | Short | Năm/Tháng | - |
-| salesYm | Integer | YYYYMM | - |
-| roSlipId | Integer | ID đơn hàng RO | FK |
-| billId | Integer | ID hóa đơn | FK |
-| billDate | Date | Ngày HĐ | - |
-| billCutoffDate | Date | Ngày chốt HĐ | - |
-| salesDate | Date | Ngày bán | - |
-| deliveryDate | Date | Ngày giao | - |
-| receptNo | String | Số biên nhận | - |
-| customerCode | String | Mã KH | FK |
-| customerName | String | Tên KH | - |
-| deliveryCode | String | Mã nơi giao | FK |
-| deliveryName | String | Tên nơi giao | - |
-| deliveryZipCode | String | Mã bưu điện giao | - |
-| deliveryAddress1/2 | String | Địa chỉ giao | - |
-| deliveryPcName | String | Người nhận | - |
-| deliveryTel | String | Điện thoại giao | - |
-| baCode/baName | String | Mã/Tên BA | - |
-| taxShiftCategory | String | Cách tính thuế | - |
-| ctaxPriceTotal | BigDecimal | Tổng thuế | - |
-| priceTotal | BigDecimal | Tổng tiền (chưa thuế) | - |
-| gmTotal | BigDecimal | Tổng GM | - |
-| billPrintCount | Integer | Số lần in HĐ | - |
-| deliveryPrintCount | Integer | Số lần in giao | - |
-| tanCd/tanName | String | Người phụ trách | - |
-| nTanCd/nTanName | String | Người phụ trách mới | - |
-| kTanCd/kTanName | String | Người phụ trách cũ | - |
-| seiKbn | Integer | Phân loại thuế | - |
-| ryoKbn | Integer | Phân loại RYO | - |
-| zeiKbn | Integer | Phân loại thuế | - |
-| simeDd | Integer | Ngày chốt | - |
-| bankCode/storeCode/accountNum | String | Thông tin NH | - |
-| creFunc/creDatetm/creUser | - | Audit create | - |
-| updFunc/updDatetm/updUser | - | Audit update | - |
-
----
-
-### 2.2. SalesLineTrn (売上伝票明細行)
-
-**Table:** `SALES_LINE_TRN` | **Entity:** `SalesLineTrn.java` | **File:** `@/workspace/SalesCube/src/main/java/jp/co/arkinfosys/entity/SalesLineTrn.java:1-251`
-
-| Field | Type | Mô tả | Notes |
-|-------|------|-------|-------|
-| salesLineId | Integer | ID dòng | PK, Auto |
-| status | String | Trạng thái | - |
-| salesSlipId | Integer | ID phiếu bán | FK |
-| lineNo | Short | Số dòng | - |
-| roLineId | Integer | ID dòng RO | FK |
-| salesDetailCategory | String | Loại chi tiết | - |
-| productCode | String | Mã SP | FK |
-| customerPcode | String | Mã SP KH | - |
-| productAbstract | String | Tóm tắt SP | - |
-| quantity | BigDecimal | Số lượng | - |
-| deliveryProcessCategory | String | Xử lý giao hàng | - |
-| unitPrice | BigDecimal | Đơn giá | - |
-| unitCategory | String | Đơn vị | - |
-| unitName | String | Tên đơn vị | - |
-| packQuantity | Short | Số lượng/đóng gói | - |
-| unitRetailPrice | BigDecimal | Giá bán lẻ 1 | - |
-| unitRetailPriceStart/EndDate | Date | Thời hạn giá 1 | - |
-| unitRetailPrice2/3 | BigDecimal | Giá bán lẻ 2,3 | - |
-| retailPrice | BigDecimal | Giá bán lẻ | - |
-| unitCost | BigDecimal | Giá vốn | - |
-| cost | BigDecimal | Chi phí | - |
-| taxCategory | String | Loại thuế | - |
-| ctaxRate | BigDecimal | Thuế suất | - |
-| ctaxPrice | BigDecimal | Tiền thuế | - |
-| gm | BigDecimal | GM (Gross Margin) | - |
-| remarks | String | Ghi chú | - |
-| eadRemarks | String | Ghi chú EAD | - |
-| rackCodeSrc | String | Mã kệ nguồn | - |
-| depositPrice | BigDecimal | Tiền đặt cọc | - |
-
----
-
-### 2.3. Bill (請求書)
-
-**Table:** `BILL_TRN` | **Entity:** `Bill.java` | **File:** `@/workspace/SalesCube/src/main/java/jp/co/arkinfosys/entity/Bill.java:1-157`
-
-**Constants:**
-- `STATUS_INIT = "0"`
-- `TYPE_SALES = "0"` | `TYPE_NEWS = "1"` | `TYPE_WEB = "2"`
-
-| Field | Type | Mô tả | Notes |
-|-------|------|-------|-------|
-| billId | Integer | ID HĐ | PK |
-| status | String | Trạng thái | - |
-| billYear/Month | Short | Năm/Tháng HĐ | - |
-| billYm | Integer | YYYYMM | - |
-| billCutoffDate | Date | Ngày chốt HĐ | - |
-| cutoffGroup | String | Nhóm chốt | - |
-| remarks | String | Ghi chú | - |
-| baCode | String | Mã BA | - |
-| customerCode | String | Mã KH | FK |
-| lastBillPrice | BigDecimal | Số dư kỳ trước | - |
-| depositPrice | BigDecimal | Tiền đã thu | - |
-| adjPrice | BigDecimal | Điều chỉnh | - |
-| covPrice | BigDecimal | Chuyển khoản | - |
-| salesPrice | BigDecimal | Doanh thu | - |
-| ctaxPrice | BigDecimal | Thuế | - |
-| rguPrice | BigDecimal | RGU | - |
-| dctPrice | BigDecimal | Chiết khấu | - |
-| etcPrice | BigDecimal | Khác | - |
-| thisBillPrice | BigDecimal | Tổng cộng | - |
-| slipNum | Short | Số phiếu | - |
-| codLastBillPrice ~ codThisBillPrice | BigDecimal | Các trường COD | - |
-| codSlipNum | Short | Số phiếu COD | - |
-| userId | String | Người tạo | - |
-
----
-
-### 2.4. DepositSlip (入金伝票)
-
-**Table:** `DEPOSIT_SLIP_TRN` | **Entity:** `DepositSlip.java` | **File:** `@/workspace/SalesCube/src/main/java/jp/co/arkinfosys/entity/DepositSlip.java:1-223`
-
-**Constants:**
-- `STATUS_INIT = "0"` | `STATUS_CLOSE = "9"`
-
+### 5.1. SalesLineTrn (`SALES_LINE_TRN`)
 | Field | Type | Mô tả |
 |-------|------|-------|
-| depositSlipId | Integer | ID phiếu thu | PK |
-| status | String | Trạng thái |
-| depositDate | Date | Ngày thu |
-| inputPdate | Date | Ngày nhập |
-| depositAnnual/Monthly | Short | Năm/Tháng |
-| depositYm | Integer | YYYYMM |
-| userId/Name | String | Người tạo |
-| depositAbstract | String | Tóm tắt |
-| remarks | String | Ghi chú |
-| customerCode/Name | String | Khách hàng |
-| cutoffGroup | String | Nhóm chốt |
-| paybackCycleCategory | String | Chu kỳ thanh toán |
-| baCode/baName | String | Mã/Tên BA |
+| `salesLineId` | `Integer` | - |
+| `status` | `String` | - |
+| `salesSlipId` | `Integer` | - |
+| `lineNo` | `Short` | - |
+| `roLineId` | `Integer` | - |
+| `salesDetailCategory` | `String` | - |
+| `productCode` | `String` | - |
+| `customerPcode` | `String` | - |
+| `productAbstract` | `String` | - |
+| `quantity` | `BigDecimal` | - |
+| `deliveryProcessCategory` | `String` | - |
+| `unitPrice` | `BigDecimal` | - |
+| `unitCategory` | `String` | - |
+| `unitName` | `String` | - |
+| `packQuantity` | `Short` | - |
+| `unitRetailPrice` | `BigDecimal` | - |
+| `retailPrice` | `BigDecimal` | - |
+| `unitCost` | `BigDecimal` | - |
+| `cost` | `BigDecimal` | - |
+| `taxCategory` | `String` | - |
+| `ctaxRate` | `BigDecimal` | - |
+| `ctaxPrice` | `BigDecimal` | - |
+| `gm` | `BigDecimal` | - |
+| `remarks` | `String` | - |
+| `eadRemarks` | `String` | - |
+| `productRemarks` | `String` | - |
+| `rackCodeSrc` | `String` | - |
+| `creFunc` | `String` | - |
+| `creDatetm` | `Timestamp` | - |
+| `creUser` | `String` | - |
+| `updFunc` | `String` | - |
+| `updDatetm` | `Timestamp` | - |
+| `updUser` | `String` | - |
+
+### 5.1. Bill (`BILL_TRN`)
+| Field | Type | Mô tả |
+|-------|------|-------|
+| `billId` | `Integer` | - |
+| `status` | `String` | - |
+| `billYear` | `Short` | - |
+| `billMonth` | `Short` | - |
+| `billYm` | `Integer` | - |
+| `billCutoffDate` | `Date` | - |
+| `cutoffGroup` | `String` | - |
+| `cutoffPdate` | `Timestamp` | - |
+| `remarks` | `String` | - |
+| `baCode` | `String` | - |
+| `customerCode` | `String` | - |
+| `lastBillPrice` | `BigDecimal` | - |
+| `depositPrice` | `BigDecimal` | - |
+| `adjPrice` | `BigDecimal` | - |
+| `covPrice` | `BigDecimal` | - |
+| `salesPrice` | `BigDecimal` | - |
+| `ctaxPrice` | `BigDecimal` | - |
+| `rguPrice` | `BigDecimal` | - |
+| `dctPrice` | `BigDecimal` | - |
+| `etcPrice` | `BigDecimal` | - |
+| `thisBillPrice` | `BigDecimal` | - |
+| `slipNum` | `Short` | - |
+| `codLastBillPrice` | `BigDecimal` | - |
+| `codDepositPrice` | `BigDecimal` | - |
+| `codAdjPrice` | `BigDecimal` | - |
+| `codCovPrice` | `BigDecimal` | - |
+| `codSalesPrice` | `BigDecimal` | - |
+| `codCtaxPrice` | `BigDecimal` | - |
+| `codRguPrice` | `BigDecimal` | - |
+| `codDctPrice` | `BigDecimal` | - |
+| `codEtcPrice` | `BigDecimal` | - |
+| `codThisBillPrice` | `BigDecimal` | - |
+| `codSlipNum` | `Short` | - |
+| `userId` | `String` | - |
+| `userName` | `String` | - |
+| `paybackPlanDate` | `Date` | - |
+| `lastPrintDate` | `Date` | - |
+| `billPrintCount` | `Integer` | - |
+| `billCrtCategory` | `String` | - |
+| `lastSalesDate` | `Date` | - |
+| `creFunc` | `String` | - |
+| `creDatetm` | `Timestamp` | - |
+| `creUser` | `String` | - |
+| `updFunc` | `String` | - |
+| `updDatetm` | `Timestamp` | - |
+| `updUser` | `String` | - |
+| `paybackCycleCategory` | `String` | - |
+
+### 5.1. DepositSlip (`DEPOSIT_SLIP_TRN`)
+| Field | Type | Mô tả |
+|-------|------|-------|
+| `depositSlipId` | `Integer` | - |
+| `status` | `String` | - |
+| `depositDate` | `Date` | - |
+| `inputPdate` | `Date` | - |
+| `depositAnnual` | `Short` | - |
+| `depositMonthly` | `Short` | - |
+| `depositYm` | `Integer` | - |
+| `userId` | `String` | - |
+| `userName` | `String` | - |
+| `depositAbstract` | `String` | - |
+| `remarks` | `String` | - |
+| `customerCode` | `String` | - |
+| `customerName` | `String` | - |
+| `customerRemarks` | `String` | - |
+| `customerCommentData` | `String` | - |
+| `cutoffGroup` | `String` | - |
+| `paybackCycleCategory` | `String` | - |
+| `baCode` | `String` | - |
+| `baName` | `String` | - |
+| `baKana` | `String` | - |
+| `baOfficeName` | `String` | - |
+| `baOfficeKana` | `String` | - |
+| `baDeptName` | `String` | - |
+| `baZipCode` | `String` | - |
+| `baAddress1` | `String` | - |
+| `baAddress2` | `String` | - |
+| `baPcName` | `String` | - |
+| `baPcKana` | `String` | - |
+| `baPcPreCatrgory` | `String` | - |
+| `baPcPre` | `String` | - |
+| `baTel` | `String` | - |
+| `baFax` | `String` | - |
+| `baEmail` | `String` | - |
+| `baUrl` | `String` | - |
+| `salesCmCategory` | `String` | - |
+| `depositCategory` | `String` | - |
+| `depositTotal` | `BigDecimal` | - |
+| `billId` | `Integer` | - |
+| `billCutoffDate` | `Date` | - |
+| `billCutoffPdate` | `Timestamp` | - |
+| `artId` | `Integer` | - |
+| `salesSlipId` | `Integer` | - |
+| `depositMethodTypeCategory` | `String` | - |
+| `taxFractCategory` | `String` | - |
+| `priceFractCategory` | `String` | - |
+| `creFunc` | `String` | - |
+| `creDatetm` | `Timestamp` | - |
+| `creUser` | `String` | - |
+| `updFunc` | `String` | - |
+| `updDatetm` | `Timestamp` | - |
+| `updUser` | `String` | - |
+| `salesCutoffDate` | `Date` | - |
+| `salesCutoffPdate` | `Timestamp` | - |
+
+### 5.1. DepositLine (`DEPOSIT_LINE_TRN`)
+| Field | Type | Mô tả |
+|-------|------|-------|
+| `depositLineId` | `Integer` | - |
+| `status` | `String` | - |
+| `depositSlipId` | `Integer` | - |
+| `lineNo` | `Short` | - |
+| `depositCategory` | `String` | - |
+| `price` | `BigDecimal` | - |
+| `instDate` | `Date` | - |
+| `instNo` | `String` | - |
+| `bankId` | `Integer` | - |
+| `bankInfo` | `String` | - |
+| `remarks` | `String` | - |
+| `salesLineId` | `Integer` | - |
+| `creFunc` | `String` | - |
+| `creDatetm` | `Timestamp` | - |
+| `creUser` | `String` | - |
+| `updFunc` | `String` | - |
+| `updDatetm` | `Timestamp` | - |
+| `updUser` | `String` | - |
+
+### 5.1. RoSlipTrn (`RO_SLIP_TRN`)
+| Field | Type | Mô tả |
+|-------|------|-------|
+| `roSlipId` | `Integer` | - |
+| `status` | `String` | - |
+| `roAnnual` | `Short` | - |
+| `roMonthly` | `Short` | - |
+| `roYm` | `Integer` | - |
+| `roDate` | `Date` | - |
+| `shipDate` | `Date` | - |
+| `deliveryDate` | `Date` | - |
+| `receptNo` | `String` | - |
+| `customerSlipNo` | `String` | - |
+| `salesCmCategory` | `String` | - |
+| `cutoffGroup` | `String` | - |
+| `userId` | `String` | - |
+| `userName` | `String` | - |
+| `remarks` | `String` | - |
+| `customerCode` | `String` | - |
+| `customerName` | `String` | - |
+| `customerRemarks` | `String` | - |
+| `customerCommentData` | `String` | - |
+| `deliveryCode` | `String` | - |
+| `deliveryName` | `String` | - |
+| `deliveryKana` | `String` | - |
+| `deliveryOfficeName` | `String` | - |
+| `deliveryOfficeKana` | `String` | - |
+| `deliveryDeptName` | `String` | - |
+| `deliveryZipCode` | `String` | - |
+| `deliveryAddress1` | `String` | - |
+| `deliveryAddress2` | `String` | - |
+| `deliveryPcName` | `String` | - |
+| `deliveryPcKana` | `String` | - |
+| `deliveryPcPreCategory` | `String` | - |
+| `deliveryPcPre` | `String` | - |
+| `deliveryTel` | `String` | - |
+| `deliveryFax` | `String` | - |
+| `deliveryEmail` | `String` | - |
+| `deliveryUrl` | `String` | - |
+| `estimateSheetId` | `Integer` | - |
+| `taxShiftCategory` | `String` | - |
+| `ctaxPriceTotal` | `BigDecimal` | - |
+| `ctaxRate` | `BigDecimal` | - |
+| `costTotal` | `BigDecimal` | - |
+| `retailPriceTotal` | `BigDecimal` | - |
+| `priceTotal` | `BigDecimal` | - |
+| `printCount` | `Integer` | - |
+| `codSc` | `String` | - |
+| `creFunc` | `String` | - |
+| `creDatetm` | `Timestamp` | - |
+| `creUser` | `String` | - |
+| `updFunc` | `String` | - |
+| `updDatetm` | `Timestamp` | - |
+| `updUser` | `String` | - |
+| `paybackCycleCategory` | `String` | - |
+| `taxFractCategory` | `String` | - |
+| `priceFractCategory` | `String` | - |
+| `dcCategory` | `String` | - |
+| `dcName` | `String` | - |
+| `dcTimezoneCategory` | `String` | - |
+| `dcTimezone` | `String` | - |
+
+### 5.1. EstimateSheetTrn (`ESTIMATE_SHEET_TRN`)
+| Field | Type | Mô tả |
+|-------|------|-------|
+| `estimateSheetId` | `String` | - |
+| `estimateAnnual` | `Short` | - |
+| `estimateMonthly` | `Short` | - |
+| `estimateYm` | `Integer` | - |
+| `estimateDate` | `Date` | - |
+| `deliveryInfo` | `String` | - |
+| `validDate` | `Date` | - |
+| `userId` | `String` | - |
+| `userName` | `String` | - |
+| `remarks` | `String` | - |
+| `title` | `String` | - |
+| `estimateCondition` | `String` | - |
+| `submitName` | `String` | - |
+| `submitPreCategory` | `String` | - |
+| `submitPre` | `String` | - |
+| `customerCode` | `String` | - |
+| `customerName` | `String` | - |
+| `customerRemarks` | `String` | - |
+| `customerCommentData` | `String` | - |
+| `deliveryName` | `String` | - |
+| `deliveryOfficeName` | `String` | - |
+| `deliveryDeptName` | `String` | - |
+| `deliveryZipCode` | `String` | - |
+| `deliveryAddress1` | `String` | - |
+| `deliveryAddress2` | `String` | - |
+| `deliveryPcName` | `String` | - |
+| `deliveryPcKana` | `String` | - |
+| `deliveryPcPreCategory` | `String` | - |
+| `deliveryPcPre` | `String` | - |
+| `deliveryTel` | `String` | - |
+| `deliveryFax` | `String` | - |
+| `deliveryEmail` | `String` | - |
+| `deliveryUrl` | `String` | - |
+| `ctaxPriceTotal` | `BigDecimal` | - |
+| `ctaxRate` | `BigDecimal` | - |
+| `costTotal` | `BigDecimal` | - |
+| `retailPriceTotal` | `BigDecimal` | - |
+| `estimateTotal` | `BigDecimal` | - |
+| `memo` | `String` | - |
+| `creFunc` | `String` | - |
+| `creDatetm` | `Timestamp` | - |
+| `creUser` | `String` | - |
+| `updFunc` | `String` | - |
+| `updDatetm` | `Timestamp` | - |
+| `updUser` | `String` | - |
+| `taxFractCategory` | `String` | - |
+| `priceFractCategory` | `String` | - |
+
+### 5.1. PoSlipTrn (`PO_SLIP_TRN`)
+| Field | Type | Mô tả |
+|-------|------|-------|
+| `poSlipId` | `Integer` | - |
+| `status` | `String` | - |
+| `poDate` | `Date` | - |
+| `poAnnual` | `Short` | - |
+| `poMonthly` | `Short` | - |
+| `poYm` | `Integer` | - |
+| `deliveryDate` | `Date` | - |
+| `userId` | `String` | - |
+| `userName` | `String` | - |
+| `remarks` | `String` | - |
+| `supplierCode` | `String` | - |
+| `supplierName` | `String` | - |
+| `supplierKana` | `String` | - |
+| `supplierZipCode` | `String` | - |
+| `supplierAddress1` | `String` | - |
+| `supplierAddress2` | `String` | - |
+| `supplierPcName` | `String` | - |
+| `supplierPcKana` | `String` | - |
+| `supplierPcPreCategory` | `String` | - |
+| `supplierPcPost` | `String` | - |
+| `supplierTel` | `String` | - |
+| `supplierFax` | `String` | - |
+| `supplierEmail` | `String` | - |
+| `supplierUrl` | `String` | - |
+| `transportCategory` | `String` | - |
+| `taxShiftCategory` | `String` | - |
+| `taxFractCategory` | `String` | - |
+| `priceFractCategory` | `String` | - |
+| `rateId` | `Integer` | - |
+| `supplierCmCategory` | `String` | - |
+| `priceTotal` | `BigDecimal` | - |
+| `ctaxTotal` | `BigDecimal` | - |
+| `ctaxRate` | `BigDecimal` | - |
+| `fePriceTotal` | `BigDecimal` | - |
+| `printCount` | `Integer` | - |
+| `creFunc` | `String` | - |
+| `creDatetm` | `Timestamp` | - |
+| `creUser` | `String` | - |
+| `updFunc` | `String` | - |
+| `updDatetm` | `Timestamp` | - |
+| `updUser` | `String` | - |
+| `supplierAbbr` | `String` | - |
+| `supplierDeptName` | `String` | - |
+| `supplierPcPre` | `String` | - |
+
+### 5.1. EadSlipTrn (`EAD_SLIP_TRN`)
+| Field | Type | Mô tả |
+|-------|------|-------|
+| `eadSlipId` | `Integer` | - |
+| `eadDate` | `Date` | - |
+| `eadAnnual` | `Short` | - |
+| `eadMonthly` | `Short` | - |
+| `eadYm` | `Integer` | - |
+| `userId` | `String` | - |
+| `userName` | `String` | - |
+| `eadSlipCategory` | `String` | - |
+| `eadCategory` | `String` | - |
+| `remarks` | `String` | - |
+| `srcFunc` | `String` | - |
+| `salesSlipId` | `Integer` | - |
+| `supplierSlipId` | `Integer` | - |
+| `moveDepositSlipId` | `Integer` | - |
+| `stockPdate` | `Date` | - |
+| `creFunc` | `String` | - |
+| `creDatetm` | `Timestamp` | - |
+| `creUser` | `String` | - |
+| `updFunc` | `String` | - |
+| `updDatetm` | `Timestamp` | - |
+| `updUser` | `String` | - |
+
+### 5.1. ProductStockInfo (`-`)
+| Field | Type | Mô tả |
+|-------|------|-------|
+| `aggregateMonthsRange` | `Integer` | - |
+| `numDecAlignment` | `Short` | - |
+| `unitPriceDecAlignment` | `Short` | - |
+| `statsDecAlignment` | `Short` | - |
+| `priceFractCategory` | `String` | - |
+| `productFractCategory` | `String` | - |
+| `productCode` | `String` | - |
+| `productName` | `String` | - |
+| `rackCode` | `String` | - |
+| `rackName` | `String` | - |
+| `avgShipCount` | `Integer` | - |
+| `maxStockNum` | `Integer` | - |
+| `poNum` | `Integer` | - |
+| `poLot` | `BigDecimal` | - |
+| `supplierPriceYen` | `BigDecimal` | - |
+| `supplierPriceDol` | `BigDecimal` | - |
+| `retailPrice` | `BigDecimal` | - |
+| `leadTime` | `Integer` | - |
+| `salesStandardDeviation` | `BigDecimal` | - |
+| `mineSafetyStock` | `Integer` | - |
+| `entrustSafetyStock` | `Integer` | - |
+| `stockQuantityEadUnclosed` | `BigDecimal` | - |
+| `stockQuantityEadClosed` | `BigDecimal` | - |
+| `stockQuantityEntrustEad` | `BigDecimal` | - |
+| `restQuantityRo` | `BigDecimal` | - |
+| `restQuantityPoShip` | `BigDecimal` | - |
+| `restQuantityPoAir` | `BigDecimal` | - |
+| `restQuantityPoDelivery` | `BigDecimal` | - |
+| `restQuantityEntrust` | `BigDecimal` | - |
+| `deliveryDate` | `Date` | - |
+| `restQuantityPo` | `BigDecimal` | - |
+| `currentStockQuantity` | `BigDecimal` | - |
+| `availableStockQuantity` | `BigDecimal` | - |
+| `holdingStockQuantity` | `BigDecimal` | - |
+| `holdingStockMonth` | `BigDecimal` | - |
+| `roQuantity` | `BigDecimal` | - |
+| `salesQuantity` | `BigDecimal` | - |
+| `maxSalesQuantity` | `BigDecimal` | - |
+| `retailPriceTotal` | `BigDecimal` | - |
+| `grossMarginTotal` | `BigDecimal` | - |
+| `entrustPoNum` | `BigDecimal` | - |
+| `poSlipId` | `Integer` | - |
 
 ---
-
-### 2.5. Other Transaction Entities
-
-| Entity | Table | Mô tả |
-|--------|-------|-------|
-| DepositLine | `DEPOSIT_LINE_TRN` | Chi tiết thu tiền |
-| RoSlipTrn | `RO_SLIP_TRN` | Đơn đặt hàng |
-| RoLineTrn | `RO_LINE_TRN` | Chi tiết đơn đặt hàng |
-| EadSlipTrn | `EAD_SLIP_TRN` | Phiếu nhập/xuất kho |
-| EadLineTrn | `EAD_LINE_TRN` | Chi tiết nhập/xuất kho |
-| BillLine | `BILL_LINE_TRN` | Chi tiết hóa đơn |
-| EstimateSlip | `ESTIMATE_SLIP_TRN` | Phiếu báo giá |
-| PurchaseSlip | `PURCHASE_SLIP_TRN` | Phiếu mua hàng |
-
----
-
-## 3. HISTORY Entities (Lịch sử)
-
-| Entity | Table | Mô tả |
-|--------|-------|-------|
-| CustomerHist | `CUSTOMER_MST_HIST` | Lịch sử KH |
-| SalesSlipTrnHist | `SALES_SLIP_TRN_HIST` | Lịch sử bán hàng |
-| DepositSlipHist | `DEPOSIT_SLIP_TRN_HIST` | Lịch sử thu tiền |
-| DepositLineHist | `DEPOSIT_LINE_TRN_HIST` | Lịch sử chi tiết thu |
-
----
-
-## 4. Entity Relationship
-
-```
-┌─────────────┐       ┌─────────────────┐       ┌─────────────┐
-│   Customer  │◄──────│   SalesSlipTrn  │──────►│ SalesLineTrn│
-│  (得意先)   │       │   (売上伝票)     │       │ (売上明細)  │
-└─────────────┘       └────────┬────────┘       └──────┬──────┘
-        │                        │                       │
-        │                        ▼                       ▼
-        │                 ┌─────────────┐         ┌─────────────┐
-        │                 │    Bill     │         │   Product   │
-        │                 │   (請求書)   │         │  (商品)     │
-        │                 └──────┬──────┘         └─────────────┘
-        │                        │
-        ▼                        ▼
-┌─────────────┐       ┌─────────────────┐
-│ DepositSlip │◄──────│   DepositLine   │
-│  (入金伝票)  │       │   (入金明細)    │
-└─────────────┘       └─────────────────┘
-```
-
----
-
-## 5. Priority Tables for Migration
-
-### Priority 1 - Core Business (Quan trọng nhất)
-| # | Table | Entity | Description |
-|---|-------|--------|-------------|
-| 1 | `CUSTOMER_MST` | Customer | Khách hàng |
-| 2 | `PRODUCT_MST` | Product | Sản phẩm |
-| 3 | `SALES_SLIP_TRN` | SalesSlipTrn | Phiếu bán hàng |
-| 4 | `SALES_LINE_TRN` | SalesLineTrn | Chi tiết bán hàng |
-| 5 | `BILL_TRN` | Bill | Hóa đơn |
-| 6 | `DEPOSIT_SLIP_TRN` | DepositSlip | Phiếu thu tiền |
-| 7 | `DEPOSIT_LINE_TRN` | DepositLine | Chi tiết thu tiền |
-
-### Priority 2 - Supporting (Hỗ trợ)
-| # | Table | Description |
-|---|-------|-------------|
-| 8 | `USER_MST` | Người dùng |
-| 9 | `CATEGORY_MST` | Phân loại |
-| 10 | `TAX_RATE_MST` | Thuế suất |
-| 11 | `RACK_MST` | Kệ hàng |
-| 12 | `BANK_MST` | Ngân hàng |
-| 13 | `SUPPLIER_MST` | Nhà cung cấp |
-
-### Priority 3 - History (Lịch sử)
-| # | Table | Description |
-|---|-------|-------------|
-| 14 | `*_HIST` | Các bảng lịch sử |
-
----
-
 *Generated from SalesCube source analysis*
