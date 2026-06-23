@@ -110,7 +110,7 @@ Ghi vào log tóm tắt:
 | Java Action source | `SalesCube/WEB/SalesCube/src/main/java/.../action` | Found |
 | Java Service source | `SalesCube/WEB/SalesCube/src/main/java/.../service` | Found |
 | DDL | `SalesCube/DB/sql/CREATE.sql` | Found |
-| Workflow docs | `output/workflows/` | Found |
+| Workflow docs | `output/cursor/workflows/` | Found |
 | API contracts | `docs/spec/08-api-contracts.md` | Found |
 | Screen inventory | `docs/spec/05-screen-inventory.md` | Missing |
 | Prisma schema | `packages/db/prisma/schema.prisma` | Found |
@@ -174,7 +174,7 @@ Template:
 
 ## Nguồn cần đọc song song
 
-1. `output/workflows/WF-XX-<module>.md`
+1. `output/cursor/workflows/WF-XX-<module>.md`
 2. Java Action class tương ứng.
 3. Java Service class(es) liên quan.
 4. SQL query / entity SQL liên quan.
@@ -201,7 +201,7 @@ Template:
 
 | Source Type | File | Relevance |
 |---|---|---|
-| Workflow | `output/workflows/WF-XX-<module>.md` | Business flow |
+| Workflow | `output/cursor/workflows/WF-XX-<module>.md` | Business flow |
 | Action | `.../ReceiveOrderAction.java` | Entry point, permission, request binding |
 | Service | `.../ReceiveOrderService.java` | Rules, transaction, DB side effects |
 | SQL | `.../ReceiveOrder.sql` | Query conditions |
@@ -393,7 +393,7 @@ docs/function-design/FD-<MODULE>-<NN>-<kebab-name>.md
 ```markdown
 # FD-<MODULE>-<NN>: <Tên Function> (<Tên tiếng Nhật>)
 
-> **WF nguồn**: [WF-XX-name.md](../../output/workflows/WF-XX-name.md)  
+> **WF nguồn**: [WF-XX-name.md](../../output/cursor/workflows/WF-XX-name.md)  
 > **Java source**: `action/<module>/<ActionClass>.java`, `service/<ServiceClass>.java`  
 > **Confidence**: HIGH / MEDIUM / LOW
 

@@ -122,7 +122,7 @@ Xác minh target architecture, database mode và source trước khi tạo code.
 |---|---|---|
 | Legacy Action | `.../InputRoSlipAction.java` | Found |
 | Legacy Service | `.../RoSlipService.java` | Found |
-| Workflow docs | `output/workflows/WF-03-receive-order.md` | Found |
+| Workflow docs | `output/cursor/workflows/WF-03-receive-order.md` | Found |
 | FD docs | `docs/function-design/FD-RORDER-*.md` | Partial |
 | Prisma schema | `packages/db/prisma/schema.prisma` | Found |
 | Database mode | `LEGACY_DB_ACCESS` | Confirmed |
@@ -192,6 +192,34 @@ Template:
 
 ---
 
+# Phase 1.5 – Migration Map Maintenance
+
+## Mục tiêu
+
+Giữ `docs/spec/04-migration-map.md` đồng bộ khi scope module hoặc priority thay đổi.
+
+## Khi nào chạy
+
+- Sau Phase 1 scope inventory (module mới)
+- Sau parity matrix xác định priority shift
+- Khi thêm characterization test CRITICAL/HIGH
+
+## Cập nhật bắt buộc
+
+| Section spec 04 | Nguồn |
+|-----------------|-------|
+| §2 Module Mapping | `00-scope.md` + FD/WF inventory |
+| §3 Database Mapping | Prisma models + `02-entity-list.md` |
+| §4 Characterization Test Plan | `05-test-plan.md` parity risks |
+
+## Quy tắc
+
+1. Ghi `TARGET_DECISION` cho tên module/API TypeScript mới.
+2. Không đổi legacy mapping đã `LEGACY_CONFIRMED` trừ khi có evidence mới.
+3. Cập nhật `docs/spec/_index.md` nếu priority module thay đổi.
+
+---
+
 # Phase 2 – Legacy Evidence & Behavior Baseline
 
 ## Mục tiêu
@@ -200,7 +228,7 @@ Tạo baseline behavior trước khi viết TypeScript.
 
 ## Nguồn cần đọc
 
-1. Workflow docs trong `output/workflows/`.
+1. Workflow docs trong `output/cursor/workflows/`.
 2. Function Design docs trong `docs/function-design/`.
 3. Java Action, base Action và interceptor/filter.
 4. Java Service + helper methods.

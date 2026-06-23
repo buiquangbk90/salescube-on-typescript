@@ -28,7 +28,7 @@ Mỗi item: `ID` | `Requirement` | `Severity` (P0/P1/P2)
 
 ---
 
-## WF — Workflow Doc (`output/workflows/WF-*.md`)
+## WF — Workflow Doc (`output/cursor/workflows/WF-*.md`)
 
 | ID | Requirement | Sev |
 |----|-------------|-----|
@@ -45,6 +45,29 @@ Mỗi item: `ID` | `Requirement` | `Severity` (P0/P1/P2)
 | WF-R10 | §10 Open Questions | P0 |
 | WF-R11 | `_evidence/WF-*.md` companion | P1 |
 | WF-X01 | Coherent use case — không class dump | P0 |
+| WF-X02 | 12 mục `docs/spec/12-bussiness-workflow.md` (Phase 2.5 matrix) | P0 |
+
+---
+
+## SPEC — docs/spec bundle (`docs/spec/0[1-9]*.md`, `10-*.md`)
+
+| ID | Requirement | Sev |
+|----|-------------|-----|
+| SPEC-R01 | `01-module-inventory.md` sync từ `output/cursor/02` với evidence | P1 |
+| SPEC-R02 | `02-entity-list.md` đủ entity/table từ DDL+Java | P1 |
+| SPEC-R03 | `03-business-rules.md` có nguồn Constants/SQL | P1 |
+| SPEC-R04 | `04-migration-map.md` priority + module mapping current | P1 |
+| SPEC-R05 | `05-screen-inventory.md` JSP list + route link | P1 |
+| SPEC-R06 | `06-prisma-schema.md` sync schema + TARGET_DECISION | P1 |
+| SPEC-R07 | `07-db-schema.md` tên bảng thực từ DDL (không placeholder) | **P0** |
+| SPEC-R08 | `08-api-contracts.md` URL có evidence hoặc UNKNOWN | P1 |
+| SPEC-R09 | `09-service-inventory.md` sync `output/cursor/11` | P1 |
+| SPEC-R10 | `10-batch-jobs.md` sync `output/cursor/05-background-jobs` | P1 |
+| SPEC-R11 | `output/cursor/database/*` 5 files (spec 11) | P1 |
+| SPEC-R12 | `docs/spec/_index.md` trạng thái cập nhật | P2 |
+| SPEC-X01 | Không publish spec 11/12 (giữ requirement) | P0 |
+
+**Baseline RE gap:** AGENT.md + SPEC-R01..R10 + SPEC-R07 P0.
 
 ---
 

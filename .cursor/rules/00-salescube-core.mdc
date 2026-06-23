@@ -32,6 +32,6 @@ Migrate hệ thống bán hàng Nhật Bản (sách/ấn phẩm) từ Java legac
 
 ## Tài liệu tham chiếu
 - Domain: `CLAUDE.md`
-- Reverse-engineering: `AGENT.md` → output vào `output/`
+- Reverse-engineering: `AGENT.md` → output vào `output/cursor/`
 - Spec migration: `docs/spec/`
 - Function design: `docs/function-design/FD-<MODULE>-<NN>-*.md`

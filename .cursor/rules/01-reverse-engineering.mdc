@@ -1,10 +1,10 @@
 ---
-description: Quy tắc reverse-engineer Java legacy theo AGENT.md và Devin workflow
-globs: output/**,docs/spec/**,docs/function-design/**
+description: Quy tắc reverse-engineer Java legacy theo AGENT.md và Cursor workflow
+globs: output/cursor/**,docs/spec/**,docs/function-design/**
 alwaysApply: false
 ---
 
-# Reverse Engineering (AGENT.md + Devin)
+# Reverse Engineering (AGENT.md)
 
 > Workflow chi tiết: `/reverse-engineering-java` → `reference-workflow.md`
 
@@ -16,17 +16,13 @@ Reverse-engineer — **không rewrite**. Evidence-first với reachability scope
 
 `CONFIRMED_BY_CODE` | `CONFIRMED_BY_CONFIG` | `CONFIRMED_BY_DDL` | `INFERRED_FROM_CODE` | `RUNTIME_DEPENDENT` | `UNKNOWN_NEEDS_VERIFICATION` | `POSSIBLY_UNREACHABLE`
 
-## Output (`output/`)
+## Output (`output/cursor/`)
 
-1. `01-reverse-engineering-overview.md`
-2. `02-module-inventory.md`
-3. `03-route-api-inventory.md`
-4. `04-dependency-graph.md`
-5. `05-data-access-inventory.md`
-6. `06-runtime-config-inventory.md`
-7. `workflows/WF-XX-*.md` (+ `_inventory`, `_evidence`, `_reports`)
-8. `reverse-engineering/<module>/00-scope.md` … `08-analysis-report.md`
-9. Integrations, risks (theo AGENT.md)
+1. `01-architecture-overview.md` … `11-service-inventory.md`
+2. `database/*` (spec 11)
+3. `workflows/WF-XX-*.md`
+4. `reverse-engineering/<module>/00-scope.md` … `08-analysis-report.md`
+5. Publish → `docs/spec/01`–`10` (Phase 9.5)
 
 ## Quy tắc
 

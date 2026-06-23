@@ -1,5 +1,5 @@
 ---
-description: Từ Java Action/Service/SQL, sinh tài liệu workflow evidence-first tại output/workflows/ với traceability route → Action → Service → SQL → DB/side effects.
+description: Từ Java Action/Service/SQL, sinh tài liệu workflow evidence-first tại output/cursor/workflows/ với traceability route → Action → Service → SQL → DB/side effects.
 ---
 
 # Workflow: Generate & Review Legacy Workflow Documentation từ SalesCube Java
@@ -9,7 +9,7 @@ description: Từ Java Action/Service/SQL, sinh tài liệu workflow evidence-fi
 Phân tích Java source của SalesCube và sinh tài liệu workflow chuẩn tại:
 
 ```text
-output/workflows/
+output/cursor/workflows/
 ```
 
 Mỗi workflow phải mô tả được:
@@ -53,7 +53,7 @@ Mọi nội dung nghiệp vụ, side effect, mapping và nhận định quan tr�
 ## Output structure
 
 ```text
-output/workflows/
+output/cursor/workflows/
 ├── _index.md
 ├── _open-questions.md
 ├── _inventory/
@@ -85,7 +85,7 @@ WF-07-close-billing.md
 
 ## Quy tắc đánh số
 
-1. Đọc `output/workflows/_index.md` hoặc scan các file `WF-*.md`.
+1. Đọc `output/cursor/workflows/_index.md` hoặc scan các file `WF-*.md`.
 2. Lấy số lớn nhất hiện có.
 3. Tạo số kế tiếp, zero-pad hai chữ số.
 4. Không tái sử dụng số đã có, kể cả workflow deprecated.
@@ -133,7 +133,7 @@ Xác minh source, framework convention và đường dẫn trước khi trace wo
 | JSP source | `.../WEB-INF/view/` | Found |
 | Route mapping | `...` | Found / Partial / Missing |
 | DDL | `SalesCube/DB/sql/CREATE.sql` | Found |
-| Existing workflow index | `output/workflows/_index.md` | Found |
+| Existing workflow index | `output/cursor/workflows/_index.md` | Found |
 ```
 
 Nếu route mapping không xác định được, route phải ghi `UNKNOWN`, không tự điền URL.
@@ -159,7 +159,7 @@ Phải lập inventory để xác định:
 Tạo file:
 
 ```text
-output/workflows/_inventory/routes.md
+output/cursor/workflows/_inventory/routes.md
 ```
 
 Template:
@@ -179,7 +179,7 @@ Template:
 Tạo file:
 
 ```text
-output/workflows/_inventory/use-cases.md
+output/cursor/workflows/_inventory/use-cases.md
 ```
 
 Template:
@@ -234,7 +234,7 @@ Mỗi public method phải được phân loại:
 Tạo file:
 
 ```text
-output/workflows/_evidence/WF-<NN>-<kebab-name>.md
+output/cursor/workflows/_evidence/WF-<NN>-<kebab-name>.md
 ```
 
 Template:
@@ -279,6 +279,62 @@ Thay vì chỉ:
 ```text
 InputRoSlipAction.java:120
 ```
+
+---
+
+# Phase 2.5 – Spec-12 Compliance Matrix
+
+## Mục tiêu
+
+Đối chiếu mỗi `WF-<NN>-*.md` với requirement baseline `docs/spec/12-bussiness-workflow.md` **trước** khi trace sâu (Phase 3) và **sau** khi generate (Phase 5).
+
+## Checklist bắt buộc (per workflow)
+
+Requirement từ spec 12 — map vào section WF tương ứng:
+
+| # | Spec 12 requirement | WF section | Severity |
+|---|---------------------|------------|----------|
+| 1 | Workflow name | §1 Tổng quan | P0 |
+| 2 | Entry route, command, or batch trigger | §2 Entry Points | P0 |
+| 3 | User role if detectable | §5 Validation & Permission | P0 |
+| 4 | Main code path | §3 Main Flow | P0 |
+| 5 | Controllers/services/models involved | §2 Components | P0 |
+| 6 | Database tables read and written | §7 Database & Side Effects | P0 |
+| 7 | Validation rules | §5 Validation & Permission | P0 |
+| 8 | Status transitions | §6 Business Rules & Status | P0 |
+| 9 | External integrations | §7 hoặc §1 | P1 |
+| 10 | Error handling | §4 Alternative / Error Flows | P1 |
+| 11 | Evidence file paths and line ranges | §0 Evidence | P0 |
+| 12 | Confidence level | §0 Evidence | P0 |
+
+## Domain ưu tiên (spec 12)
+
+Ưu tiên sinh/review WF cho:
+
+1. Customer management
+2. Sales/order processing
+3. Contract management (estimate/RO)
+4. Billing/invoice
+5. Payment (deposit/AP)
+6. Reporting/export
+7. User/permission management
+
+## Output tracking
+
+Thêm vào `output/cursor/workflows/_inventory/use-cases.md`:
+
+```markdown
+## Spec-12 Compliance
+
+| WF ID | Name | S12-1..12 MET | PARTIAL items | Status |
+|---|---|---|---|---|
+| WF-02 | customer-management | 11/12 | external integration TBD | Draft |
+```
+
+## Verdict
+
+- **0 P0 MISSING** trên checklist → tiếp Phase 3/6 gap check
+- **P0 MISSING** → bổ sung evidence hoặc ghi `UNKNOWN` + open question trước khi đánh dấu complete
 
 ---
 
@@ -384,7 +440,7 @@ flowchart TD
 ## Output path
 
 ```text
-output/workflows/WF-<NN>-<kebab-case-name>.md
+output/cursor/workflows/WF-<NN>-<kebab-case-name>.md
 ```
 
 ## Template
@@ -625,7 +681,7 @@ Status meanings:
 - Gắn `INFERRED` nếu logic chỉ suy ra được từ flow/tên gọi.
 - Gắn `UNKNOWN` nếu chưa tìm thấy evidence.
 - Không hỏi user giữa batch.
-- Ghi unknown high-impact vào `output/workflows/_open-questions.md`.
+- Ghi unknown high-impact vào `output/cursor/workflows/_open-questions.md`.
 
 ## G4 – Gap report
 
@@ -655,7 +711,7 @@ Open items:
 Đọc lại toàn bộ file:
 
 ```text
-output/workflows/WF-<NN>-<name>.md
+output/cursor/workflows/WF-<NN>-<name>.md
 ```
 
 và evidence file tương ứng.
@@ -702,7 +758,7 @@ và evidence file tương ứng.
 Create:
 
 ```text
-output/workflows/_reports/WF-<NN>-<name>-review.md
+output/cursor/workflows/_reports/WF-<NN>-<name>-review.md
 ```
 
 Template:
@@ -741,7 +797,7 @@ Template:
 Create/update:
 
 ```text
-output/workflows/_index.md
+output/cursor/workflows/_index.md
 ```
 
 Template:
@@ -761,7 +817,7 @@ Template:
 Create/update:
 
 ```text
-output/workflows/_open-questions.md
+output/cursor/workflows/_open-questions.md
 ```
 
 Template:

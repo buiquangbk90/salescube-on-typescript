@@ -1,5 +1,5 @@
 ---
-description: Pipeline bắt buộc sau workflow sinh output — gap check rồi review
+description: Pipeline bắt buộc sau workflow sinh output — cross-reference, gap check, review
 alwaysApply: true
 ---
 
@@ -11,22 +11,36 @@ Mọi skill **sinh output** phải tuân pipeline:
 Generate → Cross-reference → Gap Check → Review → Hoàn tất
 ```
 
+## Cross-reference (bắt buộc trước Gap Check)
+
+Đối chiếu output với:
+
+- [`docs/spec/_index.md`](../../docs/spec/_index.md) — master index 01–12
+- RE Phase 9.5 publish: `output/cursor/` → `docs/spec/01`–`10`
+- WF ↔ `docs/spec/03-business-rules.md`
+- Entity list ↔ Prisma / FD (`docs/spec/02`)
+- Route inventory ↔ `docs/spec/08-api-contracts.md`
+
 ## Skills (gọi bằng `/`)
 | Skill | Output |
 |-------|--------|
-| `/reverse-engineering-java` | `output/`, `docs/spec/` |
-| `/generate-workflow-docs` | `output/workflows/WF-*.md` |
-| `/generate-function-design` | `docs/function-design/FD-<MODULE>-*.md` |
-| `/generate-prisma-schema` | `schema.prisma` |
-| `/migration-typescript` | `salescube-ts/**` |
+| `/reverse-engineering-java` | `output/cursor/`, `docs/spec/01-10` (Phase 9.5) |
+| `/generate-workflow-docs` | `output/cursor/workflows/WF-*.md` |
+| `/generate-function-design` | `output/cursor/function-design/FD-<MODULE>-*.md` |
+| `/generate-prisma-schema` | `schema.prisma`, `docs/spec/06` (Phase 5.5) |
+| `/migration-typescript` | `salescube-ts/**`, `docs/spec/04` (Phase 1.5) |
 | `/check-gap-requirements` | `docs/spec/gaps/GAP-*.md` |
 | `/review-workflow-output` | `docs/spec/reviews/REV-*.md` |
 
 ## Bắt buộc
-1. **Gap check** trước review — verdict `READY_FOR_REVIEW`
-2. **Review** sau gap pass — verdict `APPROVED` hoặc sửa + re-review
-3. **Không báo hoàn tất** khi thiếu GAP hoặc REV report
+1. **Cross-reference** sau generate, trước gap check
+2. **Gap check** trước review — verdict `READY_FOR_REVIEW`
+3. **Review** sau gap pass — verdict `APPROVED` hoặc sửa + re-review
+4. **Không báo hoàn tất** khi thiếu GAP hoặc REV report
 
 ## Gap vs Review
-- Gap: *thiếu gì so với requirement?*
+- Gap: *thiếu gì so với requirement?* (gồm SPEC-* matrix)
 - Review: *nội dung có đúng/evidence OK?*
+
+## Audit
+- Workflow audit: [`docs/00.audit/audit_wf.md`](../../docs/00.audit/audit_wf.md)

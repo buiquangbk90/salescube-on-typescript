@@ -47,7 +47,7 @@ Với mỗi file output:
 ### Phase 1 – Thu thập danh sách file
 
 1. Liệt kê **tất cả file output** tạo/sửa trong phiên hiện tại:
-   - Docs: `docs/spec/**`, `output/**`
+   - Docs: `docs/spec/**`, `output/cursor/**`
    - Code: `salescube-ts/**` (nếu migration/prisma)
 2. Ghi bảng tổng hợp trước khi review:
 

@@ -282,6 +282,53 @@ InputRoSlipAction.java:120
 
 ---
 
+# Phase 2.5 – Spec-12 Compliance Matrix
+
+## Mục tiêu
+
+Đối chiếu use cases đã inventory với yêu cầu trong `docs/spec/12-bussiness-workflow.md` để đảm bảo không bỏ sót business workflow nào theo priority order.
+
+## Thực hiện
+
+Đọc `docs/spec/12-bussiness-workflow.md`. Với mỗi workflow domain trong spec-12, kiểm tra:
+
+```markdown
+## Spec-12 Compliance Matrix
+
+| # | Spec-12 domain | WF files tương ứng | Trạng thái | Ghi chú |
+|---|---|---|---|---|
+| 1 | Customer management | WF-XX-customer-*.md | ✅ / ⚠️ MISSING | |
+| 2 | Sales / Order management | WF-XX-sales-*.md | ✅ / ⚠️ MISSING | |
+| 3 | Contract management | WF-XX-contract-*.md | ✅ / ⚠️ MISSING | |
+| 4 | Billing / Invoice | WF-XX-billing-*.md | ✅ / ⚠️ MISSING | |
+| 5 | Payment / Deposit | WF-XX-deposit-*.md | ✅ / ⚠️ MISSING | |
+| 6 | Reporting / Export | WF-XX-report-*.md | ✅ / ⚠️ MISSING | |
+| 7 | User / Permission management | WF-XX-auth-*.md | ✅ / ⚠️ MISSING | |
+| 8 | Batch jobs / Scheduled | WF-XX-batch-*.md hoặc ref 05b-batch-analysis.md | ✅ / ⚠️ MISSING | |
+| 9 | Master data maintenance | WF-XX-master-*.md | ✅ / ⚠️ MISSING | |
+| 10 | Stock management | WF-XX-stock-*.md | ✅ / ⚠️ MISSING | |
+| 11 | Purchase / Receiving | WF-XX-purchase-*.md | ✅ / ⚠️ MISSING | |
+| 12 | Estimate / Quotation | WF-XX-estimate-*.md | ✅ / ⚠️ MISSING | |
+```
+
+## Batch entry inventory
+
+Nếu module có batch (từ `output/reverse-engineering/05b-batch-analysis.md`), thêm vào inventory:
+
+```markdown
+| Batch Name | Trigger | Main Script/Class | SP called | Tables affected | WF doc |
+|---|---|---|---|---|---|
+| UpdateCustomerRank | shell/cron | UpdateCustomerRank.sh | SP_UPDATE_CUSTOMER_RANK_SALES | CUSTOMER_MST | WF-XX-batch-customer-rank.md |
+```
+
+## Quy tắc
+
+- Với mỗi domain ⚠️ MISSING: tạo WF doc trong Phase 5 hoặc ghi lý do skip.
+- Priority order: 1 → 12 (customer → estimate). Không bắt đầu domain mức thấp nếu domain cao hơn còn ⚠️ MISSING.
+- Ghi compliance matrix vào `output/workflows/_inventory/use-cases.md`.
+
+---
+
 # Phase 3 – Trace Route → Action → Service → SQL
 
 ## Mục tiêu

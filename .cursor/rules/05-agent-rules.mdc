@@ -12,7 +12,8 @@ alwaysApply: true
 - **KHÔNG sửa** file trong `SalesCube/` (legacy)
 - **KHÔNG bịa** business rules — cite source thực tế
 - **KHÔNG dùng** production credentials
-- **KHÔNG tạo file** ngoài: `output/`, `docs/`, `salescube-ts/`, `.cursor/`
+- **KHÔNG tạo file** ngoài: `output/`, `docs/`, `salescube-ts/`, `.cursor/`  
+  (artifact Cursor RE/WF: **`output/cursor/`**)
 
 ## 2. Trích dẫn bắt buộc
 
@@ -34,9 +35,11 @@ Sai: "theo Java code". Đúng: `Confirmed: path/file.java:72-84`
 
 | Output | Path |
 |--------|------|
-| RE docs | `output/01-*.md` … `output/10-*.md` |
-| Workflows | `output/workflows/WF-XX-*.md` |
-| Function Design | `docs/function-design/FD-<MODULE>-<NN>-*.md` |
+| RE docs (Cursor) | `output/cursor/01-*.md` … `output/cursor/11-*.md` |
+| DB deep analysis | `output/cursor/database/*` |
+| Workflows | `output/cursor/workflows/WF-XX-*.md` |
+| Function Design (Cursor) | `output/cursor/function-design/FD-<MODULE>-<NN>-*.md` |
+| Function Design (publish) | `docs/function-design/` (tùy chọn) |
 | Migration docs | `salescube-ts/docs/migration/<module>/` |
 | Gap / Review | `docs/spec/gaps/`, `docs/spec/reviews/` |
 

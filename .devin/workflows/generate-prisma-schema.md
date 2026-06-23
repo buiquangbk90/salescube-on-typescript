@@ -504,6 +504,54 @@ Use only as a diagnostic, not as permission to apply changes.
 
 ---
 
+# Phase 5.5 – Spec/06 Document Sync
+
+## Mục tiêu
+
+Sau khi `schema.prisma` được validate, cập nhật `docs/spec/06-prisma-schema.md` để phản ánh trạng thái hiện tại của Prisma schema. File này là tham chiếu cho các workflow downstream (FD, Migration).
+
+## Thực hiện
+
+1. Đọc `docs/spec/06-prisma-schema.md` hiện tại.
+2. So sánh với `schema.prisma` vừa cập nhật.
+3. Cập nhật các section sau nếu có thay đổi:
+
+```markdown
+## Models đã sinh (cập nhật)
+
+| Prisma Model | DDL Table (@@map) | Type | Status |
+|---|---|---|---|
+| `Customer` | `CUSTOMER_MST` | MASTER | ✅ Generated |
+| `SalesSlip` | `SALES_SLIP_TRN` | TRANSACTION | ✅ Generated |
+
+## Conventions áp dụng
+
+| Convention | Giá trị | Evidence |
+|---|---|---|
+| PK convention | `String @id` hoặc composite? | DDL_CONFIRMED |
+| Soft delete col | `DEL_DATETM DateTime?` | DDL_CONFIRMED |
+| Audit cols | `INS_DATETM`, `UPD_DATETM` | DDL_CONFIRMED |
+| SEQ_MAKER tables | List tên table | JAVA_CONFIRMED |
+| Tenant suffix | `_XXXXX` → `@@map` strategy | DDL_CONFIRMED |
+
+## Open decisions
+
+| Table | Decision | Provenance |
+|---|---|---|
+| `SEQ_MAKER` | App-layer sequence — không dùng autoincrement() | TARGET_DECISION |
+```
+
+4. Ghi ngày cập nhật cuối cùng và schema version ở đầu file.
+
+## Checklist
+
+- [ ] Số model trong `docs/spec/06` khớp với `schema.prisma` (X/129 tables)
+- [ ] Tenant suffix `_XXXXX` strategy được document
+- [ ] Mọi `TARGET_DECISION` có lý do rõ ràng
+- [ ] `docs/spec/06` không cite thông tin từ `docs/spec/07-db-schema.md` nếu file đó bị corrupt
+
+---
+
 # Phase 6 – Migration Policy
 
 ## Default policy

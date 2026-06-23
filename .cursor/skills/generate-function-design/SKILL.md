@@ -14,14 +14,18 @@ Sinh FD cho từng function/màn hình — tách bạch **legacy behavior có ev
 
 ## Output
 
+**Cursor workflow (mặc định):**
+
 ```text
-docs/function-design/
+output/cursor/function-design/
 ├── _index.md
 ├── _open-questions.md
 ├── _inventory/<module>.md
 ├── _evidence/FD-<MODULE>-<NN>-<name>.md
 └── FD-<MODULE>-<NN>-<kebab-name>.md
 ```
+
+**Mirror (tùy chọn):** `docs/function-design/` — khi publish sang spec bundle.
 
 **Module prefix:** `AUTH`, `CUST`, `PROD`, `RORDER`, `SALES`, `BILL`, `DEPOSIT`, `PORDER`, `PURCHASE`, `PAYMENT`, `STOCK`, `REPORT`, `SETTING`
 

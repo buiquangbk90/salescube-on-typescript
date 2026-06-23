@@ -158,7 +158,7 @@ Chia migration theo use case nghiệp vụ, không theo số lượng Java class
 ## Output
 
 ```text
-docs/migration/<module>/00-scope.md
+salescube-ts/docs/migration/<module>/00-scope.md
 ```
 
 Template:
@@ -192,6 +192,40 @@ Template:
 
 ---
 
+# Phase 1.5 – Migration Map Maintenance
+
+## Mục tiêu
+
+Trước khi bắt đầu Phase 2, xác nhận và cập nhật `docs/spec/04-migration-map.md` để đảm bảo module này được đặt đúng priority và DB mapping đã được document.
+
+## Thực hiện
+
+1. Đọc `docs/spec/04-migration-map.md` Section 2 (Module Priority).
+2. Xác nhận module hiện tại thuộc P1 / P2 / P3.
+3. Kiểm tra Section 3 (DB mapping Legacy→Prisma). Nếu chưa có entry cho module này, thêm vào:
+
+```markdown
+## DB Mapping — <MODULE>
+
+| Legacy entity (Java/DDL) | Legacy table | Prisma Model | Target table | Rename reason | Evidence |
+|---|---|---|---|---|---|
+| `CustomerMst` | `CUSTOMER_MST` | `Customer` | `customers` | Simplify naming | TARGET_DECISION |
+| `SalesSlipTrn` | `SALES_SLIP_TRN` | `SalesOrder` | `sales_orders` | Domain language | TARGET_DECISION |
+```
+
+4. Nếu có dependency module (ví dụ SALES phụ thuộc CUSTOMER):
+   - Xác nhận dependency module đã ở trạng thái `PARITY_VERIFIED` hoặc ít nhất `schema deployed`.
+   - Ghi vào `00-scope.md`: "Precondition: CUSTOMER module parity verified."
+
+## Checklist
+
+- [ ] Module priority (P1/P2/P3) được xác nhận
+- [ ] DB mapping entries cho module được thêm vào `docs/spec/04-migration-map.md`
+- [ ] Dependency modules được kiểm tra
+- [ ] `docs/spec/04-migration-map.md` được commit với thay đổi
+
+---
+
 # Phase 2 – Legacy Evidence & Behavior Baseline
 
 ## Mục tiêu
@@ -213,7 +247,7 @@ Tạo baseline behavior trước khi viết TypeScript.
 ## Output
 
 ```text
-docs/migration/<module>/01-evidence.md
+salescube-ts/docs/migration/<module>/01-evidence.md
 ```
 
 Template:
@@ -253,7 +287,7 @@ Không chỉ ghi tên file.
 ## Output
 
 ```text
-docs/migration/<module>/02-parity-matrix.md
+salescube-ts/docs/migration/<module>/02-parity-matrix.md
 ```
 
 Template:
@@ -325,7 +359,7 @@ Ví dụ MySQL legacy → PostgreSQL target.
 ## Output
 
 ```text
-docs/migration/<module>/04-data-mapping.md
+salescube-ts/docs/migration/<module>/04-data-mapping.md
 ```
 
 Template:
@@ -383,7 +417,7 @@ Thiết kế API theo use case, không theo method name.
 ## Output
 
 ```text
-docs/migration/<module>/03-api-contract.md
+salescube-ts/docs/migration/<module>/03-api-contract.md
 ```
 
 Template:
@@ -631,7 +665,7 @@ Dùng tests để chứng minh target behavior, không chỉ kiểm tra code cov
 ## Output
 
 ```text
-docs/migration/<module>/05-test-plan.md
+salescube-ts/docs/migration/<module>/05-test-plan.md
 ```
 
 ## Test layers
@@ -757,7 +791,7 @@ Before marking a module complete:
 ## Output
 
 ```text
-docs/migration/<module>/06-migration-report.md
+salescube-ts/docs/migration/<module>/06-migration-report.md
 ```
 
 Template:
@@ -805,7 +839,7 @@ Template:
 Create/update:
 
 ```text
-docs/migration/_open-questions.md
+salescube-ts/docs/migration/_open-questions.md
 ```
 
 ```markdown
@@ -819,7 +853,7 @@ docs/migration/_open-questions.md
 Create/update:
 
 ```text
-docs/migration/_decisions.md
+salescube-ts/docs/migration/_decisions.md
 ```
 
 ```markdown

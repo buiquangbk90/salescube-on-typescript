@@ -38,6 +38,7 @@ salescube-ts/packages/db/prisma/
 | 3 | SQL → Prisma mapping rules |
 | 4 | Candidate model generation |
 | 5 | Merge, `prisma format` + `prisma validate` |
+| **5.5** | **Spec 06 doc sync** → `docs/spec/06-prisma-schema.md` |
 | 6 | Migration policy (chỉ khi user yêu cầu rõ) |
 | 7 | Gap check |
 | 8 | Review |
@@ -52,4 +53,5 @@ salescube-ts/packages/db/prisma/
 
 ## Tham chiếu
 
-- `docs/spec/02-entity-list.md`, `docs/spec/07-db-schema.md`
+- `docs/spec/02-entity-list.md`, `docs/spec/07-db-schema.md`, `docs/spec/06-prisma-schema.md`
+- `docs/spec/_index.md` — verify `07` pass gap trước khi cite DDL từ spec

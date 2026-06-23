@@ -1,6 +1,6 @@
 ---
 name: generate-workflow-docs
-description: Sinh WF-XX evidence-first tại output/workflows/ — route→Action→Service→SQL→DB, provenance JAVA/SQL/DDL_CONFIRMED. Dùng khi document luồng nghiệp vụ legacy SalesCube.
+description: Sinh WF-XX evidence-first tại output/cursor/workflows/ — route→Action→Service→SQL→DB, provenance JAVA/SQL/DDL_CONFIRMED. Dùng khi document luồng nghiệp vụ legacy SalesCube.
 disable-model-invocation: true
 ---
 
@@ -19,7 +19,7 @@ Một file WF = một **use case** nghiệp vụ (không dump cả class). Trace
 ## Output
 
 ```text
-output/workflows/
+output/cursor/workflows/
 ├── _index.md
 ├── _open-questions.md
 ├── _inventory/routes.md, use-cases.md
@@ -35,9 +35,11 @@ output/workflows/
 | 0 | Repository preflight |
 | 1 | Route & use-case inventory |
 | 2 | Evidence collection |
+| **2.5** | **Spec-12 compliance matrix** (đối chiếu `docs/spec/12-bussiness-workflow.md`) |
 | 3 | Trace Route → Action → Service → SQL |
 | 4 | Workflow modeling (mermaid) |
 | 5 | Generate `WF-<NN>-*.md` |
+| — | **Cross-reference** (`docs/spec/_index.md`, spec/03 rules) |
 | 6 | Gap check (`/check-gap-requirements`) |
 | 7 | Review → `_reports/` + `/review-workflow-output` |
 
@@ -50,5 +52,5 @@ output/workflows/
 
 ## Tham chiếu
 
-- `AGENT.md` output #8
+- `AGENT.md` output #8, `docs/spec/12-bussiness-workflow.md`
 - `/reverse-engineering-java` (nên chạy trước nếu chưa có inventory)

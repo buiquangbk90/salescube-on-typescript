@@ -2,7 +2,7 @@ Identify all business workflows that can be proven or reasonably inferred from t
 
 For each workflow, create a separate Markdown file under:
 
-output/workflows/
+output/cursor/workflows/
 
 Each workflow document must contain:
 - Workflow name

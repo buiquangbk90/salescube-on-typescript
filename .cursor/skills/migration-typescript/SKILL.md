@@ -37,6 +37,7 @@ salescube-ts/docs/migration/
 |-------|----------|
 | 0 | Migration preflight — DB mode LEGACY_DB / NEW_TARGET / CROSS_DB |
 | 1 | Module scope & use-case inventory |
+| **1.5** | **Migration map maintenance** → `docs/spec/04-migration-map.md` |
 | 2 | Legacy evidence baseline |
 | 3 | **Parity matrix** (bắt buộc trước code core) |
 | 4 | Data & schema strategy |
@@ -57,6 +58,6 @@ salescube-ts/docs/migration/
 
 ## Tham chiếu
 
-- `docs/function-design/FD-*.md`, `output/workflows/WF-*.md`
-- `docs/spec/99-salescube-typescript-migration-plan.md`
+- `docs/function-design/FD-*.md`, `output/cursor/workflows/WF-*.md`
+- `docs/spec/04-migration-map.md`, `docs/spec/99-salescube-typescript-migration-plan.md`
 - `.cursor/rules/02-typescript-migration.mdc`

@@ -63,12 +63,23 @@ Mọi claim quan trọng phải có đúng một mức độ:
 
 ```text
 output/
-├── 01-reverse-engineering-overview.md
+├── 01-architecture-overview.md
 ├── 02-module-inventory.md
 ├── 03-route-api-inventory.md
-├── 04-dependency-graph.md
-├── 05-data-access-inventory.md
-├── 06-runtime-config-inventory.md
+├── 04-database-analysis.md
+├── 05-background-jobs.md
+├── 06-auth-permission-analysis.md
+├── 07-screen-route-mapping.md
+├── 08-business-flow-hypotheses.md
+├── 09-external-integrations.md
+├── 10-risks-unknowns.md
+├── 11-service-inventory.md
+├── database/
+│   ├── table-dictionary.md
+│   ├── relationship-map.md
+│   ├── suspected-erd.mmd
+│   ├── data-lifecycle.md
+│   └── data-integrity-risks.md
 ├── workflows/
 │   ├── _index.md
 │   ├── _open-questions.md
@@ -90,6 +101,8 @@ output/
         ├── 06-view-and-client-logic.md
         ├── 07-risks-and-unknowns.md
         └── 08-analysis-report.md
+
+docs/spec/          # Phase 9.5 publish (01–10)
 ```
 
 Nếu repository đã có naming/document convention khác, tuân theo convention hiện có.
@@ -129,7 +142,7 @@ Xác định framework, đường dẫn, source generation và runtime configura
 ## Output
 
 ```text
-output/reverse-engineering/_scope/preflight.md
+output/cursor/reverse-engineering/_scope/preflight.md
 ```
 
 Template:
@@ -180,7 +193,7 @@ Không chỉ scan theo hậu tố file. Phải xác định file nào:
 Tạo file:
 
 ```text
-output/reverse-engineering/<module>/00-scope.md
+output/cursor/reverse-engineering/<module>/00-scope.md
 ```
 
 Template:
@@ -236,7 +249,7 @@ Xác định entry point thực tế thay vì suy luận từ tên Action method
 Tạo file:
 
 ```text
-output/reverse-engineering/<module>/01-entry-points.md
+output/cursor/reverse-engineering/<module>/01-entry-points.md
 ```
 
 Template:
@@ -300,7 +313,7 @@ Tạo graph thể hiện dependency thực tế, tránh chỉ list class.
 ## Output
 
 ```text
-output/reverse-engineering/<module>/03-dependency-trace.md
+output/cursor/reverse-engineering/<module>/03-dependency-trace.md
 ```
 
 Template:
@@ -444,7 +457,7 @@ Phân biệt SQL business behavior, data access and DDL fact.
 ## Output
 
 ```text
-output/reverse-engineering/<module>/05-data-access.md
+output/cursor/reverse-engineering/<module>/05-data-access.md
 ```
 
 Template:
@@ -485,6 +498,78 @@ Conclusion must be `INFERRED_FROM_CODE` unless both write and read patterns are 
 
 ---
 
+# Phase 5b – Deep Database Analysis (docs/spec/11)
+
+## Mục tiêu
+
+Phân tích sâu data model từ DDL, entity, SQL, join pattern — **không** thiết kế DB mới.  
+Requirement baseline: `docs/spec/11-database_analys.md`.
+
+## Nguồn bắt buộc
+
+- `CREATE.sql` và ALTER scripts
+- Entity classes (`jp.co.arkinfosys.entity`)
+- Named SQL (`entity/sql/`)
+- Service persistence calls từ Phase 4
+- `output/cursor/04-database-analysis.md` (nếu đã có)
+
+## Output bắt buộc
+
+```text
+output/cursor/database/
+├── table-dictionary.md
+├── relationship-map.md
+├── suspected-erd.mmd
+├── data-lifecycle.md
+└── data-integrity-risks.md
+```
+
+Nếu repo đã có `suspected-erd.md` với mermaid frontmatter, có thể giữ file cũ đồng thời tạo `.mmd` chuẩn spec 11.
+
+## Per-table checklist (table-dictionary.md)
+
+Với **mỗi** bảng/view trong DDL:
+
+| Field | Nội dung |
+|-------|----------|
+| Probable PK | Column + evidence DDL |
+| FK (inferred) | Join/SQL pattern — ghi `INFERRED_FROM_CODE` nếu không có DB constraint |
+| Search fields | Columns trong WHERE/LIKE thường gặp |
+| Status flags | `STATUS_*`, category codes |
+| Soft-delete | `DEL_DATETM` + read/write behavior |
+| Audit | `CRE_*`, `UPD_*`, `DEL_*` |
+| Business meaning | Ngắn gọn + provenance |
+| Evidence | `CREATE.sql:L...`, entity, SQL file |
+
+## relationship-map.md
+
+- Nhóm bảng theo domain (Master, O2C, P2P, Stock, Auth)
+- Liệt kê quan hệ inferred từ SQL JOIN (không invent FK constraint)
+- Link tới `suspected-erd.mmd`
+
+## suspected-erd.mmd
+
+- Mermaid `erDiagram` cho core tables
+- Chỉ quan hệ có evidence JOIN hoặc naming pattern + SQL confirm
+- Đánh dấu `UNKNOWN` cho link chưa trace được
+
+## data-lifecycle.md
+
+- Insert/update/delete patterns per entity family
+- `*_HIST` snapshot behavior
+- `SEQ_MAKER` allocation
+- Batch SP side effects
+
+## data-integrity-risks.md
+
+- Zero FK constraints (app-layer integrity)
+- Multi-tenant `_XXXXX` suffix
+- Soft-delete inconsistency
+- Missing transaction boundaries
+- Runtime-dependent stored procedures
+
+---
+
 # Phase 6 – View, JSP & Client-side Logic Analysis
 
 ## Mục tiêu
@@ -509,7 +594,7 @@ Phát hiện behavior nằm ngoài Java Action/Service.
 ## Output
 
 ```text
-output/reverse-engineering/<module>/06-view-and-client-logic.md
+output/cursor/reverse-engineering/<module>/06-view-and-client-logic.md
 ```
 
 Template:
@@ -627,7 +712,7 @@ Phát hiện các behavior không thể xác minh chỉ bằng static source.
 ## Output
 
 ```text
-output/06-runtime-config-inventory.md
+output/cursor/06-runtime-config-inventory.md
 ```
 
 Template:
@@ -646,12 +731,12 @@ Template:
 
 # Phase 9 – Generate Technical Documentation
 
-## Core documentation files
+## Core documentation files (AGENT.md alignment)
 
-### `output/01-reverse-engineering-overview.md`
+### `output/cursor/01-architecture-overview.md` (AGENT #1)
 
 ```markdown
-# SalesCube Legacy Reverse-engineering Overview
+# SalesCube Legacy Architecture Overview
 
 ## System facts
 - Framework:
@@ -669,7 +754,7 @@ Template:
 |---|---:|---:|---|
 ```
 
-### `output/02-module-inventory.md`
+### `output/cursor/02-module-inventory.md` (AGENT #2 → publish `docs/spec/01`)
 
 ```markdown
 # Module Inventory
@@ -678,7 +763,7 @@ Template:
 |---|---:|---:|---:|---:|---|---|
 ```
 
-### `output/03-route-api-inventory.md`
+### `output/cursor/03-route-api-inventory.md` (AGENT #3 → publish `docs/spec/08`)
 
 ```markdown
 # Route / API Inventory
@@ -687,23 +772,111 @@ Template:
 |---|---|---|---|---|---|---|
 ```
 
-### `output/04-dependency-graph.md`
+### `output/cursor/04-database-analysis.md` (AGENT #4)
+
+Tổng quan DB config, multi-tenant, audit pattern, sequence. Chi tiết per-table → `output/cursor/database/*` (Phase 5b).
+
+### `output/cursor/05-background-jobs.md` (AGENT #5 → publish `docs/spec/10`)
 
 ```markdown
-# Dependency Graph Index
+# Background Jobs / Batch Inventory
 
-| Module | Graph file | Cross-module dependencies | High-risk dependencies |
+| Script/SP | Trigger | Tables affected | Confidence | Evidence |
+|---|---|---|---|---|
+```
+
+### `output/cursor/06-auth-permission-analysis.md` (AGENT #6)
+
+```markdown
+# Authentication & Authorization
+
+| Area | Mechanism | Confidence | Evidence |
 |---|---|---|---|
 ```
 
-### `output/05-data-access-inventory.md`
+### `output/cursor/07-screen-route-mapping.md` (AGENT #7 → publish `docs/spec/05`)
 
 ```markdown
-# Data Access Inventory
+# Screen / Template / Route Mapping
 
-| Module | Table | Read/Write | Queries/Methods | Soft-delete signal | Confidence |
+| JSP | Route | Action | Module | Confidence | Evidence |
 |---|---|---|---|---|---|
 ```
+
+### `output/cursor/08-business-flow-hypotheses.md` (AGENT #8)
+
+Workflow candidates chưa đủ evidence cho WF doc — feed vào `/generate-workflow-docs`.
+
+### `output/cursor/09-external-integrations.md` (AGENT #9)
+
+```markdown
+# External Integrations
+
+| Integration | Entry | Data flow | Confidence | Evidence |
+|---|---|---|---|---|
+```
+
+### `output/cursor/10-risks-unknowns.md` (AGENT #10)
+
+```markdown
+# Risks, Dead Code & Unknowns
+
+| ID | Category | Finding | Severity | Confidence | Evidence |
+|---|---|---|---|---|---|
+```
+
+### `output/cursor/11-service-inventory.md` (→ publish `docs/spec/09`)
+
+Tổng hợp từ Phase 4 component graph:
+
+```markdown
+# Service Inventory
+
+| Module | Class | Package | Reachability | Called by | Confidence | Evidence |
+|---|---|---|---|---|---|---|
+```
+
+### Module-level aggregate (optional)
+
+`output/cursor/reverse-engineering/<module>/` files từ Phase 1–8 vẫn bắt buộc khi phân tích theo module.
+
+---
+
+# Phase 9.5 – Spec Bundle Publish
+
+## Mục tiêu
+
+Đồng bộ evidence từ `output/cursor/` sang `docs/spec/` — rule pipeline yêu cầu cả hai lớp tài liệu.
+
+**Không publish:** `docs/spec/11`, `docs/spec/12` (giữ requirement baseline).
+
+## Publish mapping
+
+| `docs/spec/` | Nguồn chính |
+|--------------|-------------|
+| `01-module-inventory.md` | `output/cursor/02-module-inventory.md` |
+| `02-entity-list.md` | Entity scan + `output/cursor/05-data-access-inventory.md` |
+| `03-business-rules.md` | Aggregate `*/04-business-rules.md` cross-module |
+| `05-screen-inventory.md` | `output/cursor/07-screen-route-mapping.md` |
+| `07-db-schema.md` | `CREATE.sql` + `output/cursor/database/table-dictionary.md` |
+| `08-api-contracts.md` | `output/cursor/03-route-api-inventory.md` |
+| `09-service-inventory.md` | `output/cursor/11-service-inventory.md` |
+| `10-batch-jobs.md` | `output/cursor/05-background-jobs.md` |
+
+## Quy tắc publish
+
+1. **Không overwrite** bằng convention-only (URL/JSP suy đoán không có Struts evidence).
+2. Mọi bảng/field quan trọng giữ provenance (`CONFIRMED_BY_*` / `INFERRED_*`).
+3. **`07-db-schema.md`**: regenerate từ DDL nếu corrupt hoặc thiếu tên bảng.
+4. Cập nhật trạng thái trong `docs/spec/_index.md`.
+5. Không chạy Prisma skill cite `07` cho đến khi `07` pass gap SPEC-R07.
+
+## Cross-reference (trước Gap Check)
+
+- `docs/spec/_index.md` — verify mapping
+- `output/cursor/workflows/` ↔ `docs/spec/03-business-rules.md`
+- `docs/spec/02-entity-list.md` ↔ `output/cursor/database/table-dictionary.md`
+- `docs/spec/08-api-contracts.md` ↔ route inventory
 
 ---
 
@@ -832,7 +1005,7 @@ Read all changed files for the module:
 Create:
 
 ```text
-output/reverse-engineering/<module>/08-analysis-report.md
+output/cursor/reverse-engineering/<module>/08-analysis-report.md
 ```
 
 Template:
@@ -877,7 +1050,7 @@ Template:
 Create/update:
 
 ```text
-output/workflows/_open-questions.md
+output/cursor/workflows/_open-questions.md
 ```
 
 Template:

@@ -1,10 +1,12 @@
-# FD-01: Quản lý Khách hàng (得意先マスタ)
+# FD-CUST-01: Quản lý Khách hàng (得意先マスタ)
 
-> **Module**: master  
+> **Module**: CUST  
 > **Loại**: list | create | edit | delete | search  
-> **Confidence**: HIGH (legacy WF-02, entity list) / MEDIUM (target implementation — controller đang mock)  
-> **Legacy Action**: `InputCustomerAction`, `SearchCustomerAction` (inferred)  
-> **Target**: `apps/web/(app)/customers/*` + `apps/api/modules/customers/*`
+> **WF Source**: `output/cursor/workflows/WF-02-customer-management.md`  
+> **Confidence**: HIGH (legacy WF-02, entity list, source code) / MEDIUM (target — controller vẫn mock)  
+> **Legacy Action**: `SearchCustomerAction` (search/list), `EditCustomerAction` (create/update/delete) — `Confirmed by code`  
+> **Target**: `apps/web/(app)/customers/*` + `apps/api/src/modules/customers/*`  
+> **Ngày cập nhật**: 2026-06-23
 
 ---
 
@@ -15,7 +17,7 @@
 | **Mục đích** | CRUD master khách hàng (得意先): tìm kiếm, tạo, sửa, xóa mềm; thiết lập quy tắc thanh toán/chốt hóa đơn cho từng KH |
 | **Actor** | Nhân viên bán hàng / kế toán có quyền menu Customer Master |
 | **Điều kiện tiên quyết** | Đăng nhập; `customer.read` (xem) / `customer.write` (ghi) / `customer.delete` (xóa) |
-| **Workflow liên quan** | [WF-02 — Customer Management](../../output/workflows/WF-02-customer-management.md) |
+| **Workflow liên quan** | [WF-02 — Customer Management](../cursor/workflows/WF-02-customer-management.md) |
 
 ---
 
@@ -25,12 +27,14 @@
 
 | Chức năng | Legacy (Struts) | Target (Next.js) | Trạng thái |
 |-----------|-----------------|------------------|------------|
-| Danh sách + tìm kiếm | `GET /master/searchCustomer/index` | `GET /customers` | ✅ Implemented |
-| Tạo mới | `GET /master/inputCustomer/index` | `GET /customers/new` | ✅ Implemented |
-| Sửa | `GET /master/inputCustomer/edit/{id}` | `GET /customers/[id]` | ✅ Implemented |
-| Lưu (create) | `POST /master/inputCustomer/register` | `POST /api/customers` | ⚠️ API mock |
-| Lưu (update) | `POST /master/inputCustomer/register` | `PATCH /api/customers/:id` | ⚠️ API mock |
-| Xóa | `POST /master/inputCustomer/delete` | `DELETE /api/customers/:id` | ⚠️ API mock |
+| Danh sách + tìm kiếm | `GET /master/searchCustomer/index` | `GET /customers` | ✅ Web page OK |
+| Tạo mới | `GET /master/inputCustomer/index` | `GET /customers/new` | ✅ Web page OK |
+| Sửa | `GET /master/inputCustomer/edit/{id}` | `GET /customers/[id]` | ✅ Web page OK |
+| Lấy danh sách (API) | `POST /master/searchCustomer/find` | `GET /api/customers` | ⚠️ Controller mock — Service/Repo ✅ |
+| Lấy chi tiết (API) | `GET /master/inputCustomer/edit/{id}` | `GET /api/customers/:id` | ⚠️ Controller mock |
+| Lưu (create API) | `POST /master/inputCustomer/register` | `POST /api/customers` | ⚠️ Controller mock — Service ✅ |
+| Lưu (update API) | `POST /master/inputCustomer/register` | `PATCH /api/customers/:id` | ⚠️ Controller mock — Service ✅ |
+| Xóa (API) | `POST /master/inputCustomer/delete` | `DELETE /api/customers/:id` | ⚠️ Controller mock — Service ✅ |
 | Copy KH | `GET /master/inputCustomer/copy` | TBD | ❌ Chưa có |
 
 ### 2.2 Layout — Danh sách (`/customers`)
@@ -41,8 +45,10 @@
 | Grid | Bảng: Mã, Tên (link), Kana, Liên hệ, Cutoff, Thao tác |
 | Footer | Phân trang (20 bản ghi/trang) |
 
-**Tìm kiếm**: theo mã, tên, kana, abbr (case-insensitive).  
-**Evidence (target)**: `apps/web/src/app/(app)/customers/page.tsx`
+**Tìm kiếm**: theo mã, tên, kana, abbr (case-insensitive)  
+**Legacy**: `SearchCustomerAction.createList()` load dropdowns [SearchCustomerAction.java:66-88]  
+Sort mặc định: `CUSTOMER_CODE ASC` [SearchCustomerAction.java:56-57]  
+**Target evidence**: `apps/web/src/app/(app)/customers/page.tsx`
 
 ### 2.3 Layout — Form tạo/sửa (`/customers/new`, `/customers/[id]`)
 
@@ -79,8 +85,10 @@
 | 18 | 得意先ランク | CUSTOMER_RANK_CATEGORY | `rankCategory` | string | N | - | Batch auto-update |
 | 19 | 備考 | REMARKS | `remarks` | text | N | 2000 | |
 
-**Evidence (legacy fields)**: `docs/spec/02-entity-list.md` §5.1  
-**Evidence (target schema)**: `packages/shared/src/customer.ts`, `packages/db/prisma/schema.prisma` model `Customer`
+**Legacy source**: `EditCustomerAction.java` — `doInsert()` [L161], `doUpdate()` [L223], `delete()` [L393]  
+**Legacy schema**: `Customer.java` (entity class)  
+**Target schema**: `packages/shared/src/customer.ts` — `createCustomerSchema` [L24-87]  
+**Target DB**: `packages/db/prisma/schema.prisma` model `Customer`
 
 ### 2.5 Buttons & Actions
 
@@ -127,7 +135,10 @@
 }
 ```
 
-**Implementation**: `CustomersService.findAll` + `CustomersRepository.search` — ✅ logic thật; controller hiện trả mock ⚠️
+**Implementation**:  
+- `CustomersService.findAll()` → `CustomersRepository.search()` — ✅ logic thật  
+- `LEGACY_CONFIRMED`: `customers.service.ts:10-16`, `customers.repository.ts:21-49`  
+- Controller hiện trả **mock cứng** — chưa inject `CustomersService` ⚠️ (`customers.controller.ts:28-60`)
 
 #### `GET /api/customers/:id` — Detail
 
@@ -143,10 +154,11 @@
 **Response 201**: created customer  
 **Response 409**: `Customer code "..." already exists`
 
-**Business logic**:
-1. Check duplicate `code`
+**Business logic** (`LEGACY_CONFIRMED` — `customers.service.ts:25-36`):
+1. `repo.findByCode(code)` → if exists → `ConflictException` 409
 2. `normalizeCompanyName(name)` — `packages/domain/src/customer/normalize.ts`
-3. Insert với `createdBy`, `updatedBy`
+3. `repo.create({ ...input, createdBy, updatedBy })`  
+4. ❌ **MISSING**: `INSERT CUSTOMER_MST_HIST` (audit trail) — chưa implement
 
 #### `PATCH /api/customers/:id` — Update
 
@@ -156,11 +168,19 @@
 **Response 200**: updated customer  
 **Response 404**: not found
 
+**Business logic** (`LEGACY_CONFIRMED` — `customers.service.ts:39-44`):
+1. `findOne(id)` → 404 nếu không tìm thấy  
+2. `normalizeCompanyName(name)` nếu name thay đổi  
+3. `repo.update(id, { ...data, updatedBy })`  
+4. ❌ **MISSING**: `INSERT CUSTOMER_MST_HIST`
+
 #### `DELETE /api/customers/:id` — Soft delete
 
 **Permission**: `customer.delete`  
 **Response 204**: no content  
-**Logic**: set `deletedAt = now()`, `updatedBy`
+**Logic** (`LEGACY_CONFIRMED` — `customers.repository.ts:60-65`): `SET deletedAt = now(), updatedBy = userId`  
+❌ **MISSING**: Check SALES_SLIP_TRN open trước khi xóa  
+❌ **MISSING**: `INSERT CUSTOMER_MST_HIST`
 
 ### 3.2 Error responses
 
@@ -170,7 +190,7 @@
 | 403 | Forbidden | Thiếu permission | menu check fail |
 | 404 | Customer not found | id không tồn tại hoặc đã xóa | - |
 | 409 | Customer code already exists | Trùng code | errors.duplicate |
-| 409 | TBD — cannot delete | Có SALES_SLIP mở | errors.cannotDelete |
+| 409 | TBD — cannot delete | Có relation (đọc `CustomerService.countRelations()`) | `errors.db.delete.relation` (L412) |
 
 ---
 
@@ -178,50 +198,91 @@
 
 ### 4.1 List / Search
 
+`Confirmed by code` — `SearchCustomerAction.java:32-110`, `customers.repository.ts:21-49`
+
 ```
-1. Guard: customer.read
-2. Parse query (Zod customerSearchSchema)
-3. WHERE deletedAt IS NULL
-4. IF q: OR match name, nameKana, code, abbr (insensitive)
-5. ORDER BY code ASC
-6. Paginate skip/take
-7. Return { data, total, page, pageSize }
+LEGACY:
+  SearchCustomerAction.doBeforeIndex() [L55]: set sortColumn=CUSTOMER_CODE, sortOrderAsc=true
+  SearchCustomerAction.createList() [L66]: load customerRankList + cutoffGroupList (dropdowns)
+  → CustomerService.search(form) [inferred]
+
+TARGET:
+  1. Guard: customer.read  [⚠️ @Public() bypass hiện tại]
+  2. Parse query (Zod customerSearchSchema)  [✅ ZodValidationPipe]
+  3. WHERE deletedAt IS NULL  [✅ customers.repository.ts:27-28]
+  4. IF q: OR match name/nameKana/code/abbr insensitive  [✅ customers.repository.ts:31-37]
+  5. ORDER BY code ASC  [✅ customers.repository.ts:45]
+  6. skip/take paginate  [✅ customers.repository.ts:40-48]
+  7. Return { data, total, page, pageSize }  [✅ customers.service.ts:16]
 ```
 
 ### 4.2 Create
 
+`Confirmed by code` — `EditCustomerAction.java:108-163`, `customers.service.ts:25-36`
+
 ```
-1. Guard: customer.write
-2. Validate body (createCustomerSchema)
-3. findByCode(code) → if exists → 409 Conflict
-4. normalizeCompanyName(name)
-5. prisma.customer.create({ ...input, createdBy, updatedBy })
-6. [LEGACY] INSERT CUSTOMER_MST_HIST — ❌ chưa implement target
-7. Return 201
+LEGACY — EditCustomerAction:
+  index() [L108]: init form mới, load InitMstService defaults [L438]
+  insert() [L161]: → super.doInsert() → CustomerService.insert(dto)
+  doInsertAfter() [L172]: INSERT DELIVERY_MST (deliveryList) + INSERT CUSTOMER_REL
+  → ZipService.checkZipCodeAndAddress() → warning nếu ZIP không khớp
+
+TARGET:
+  1. Guard: customer.write  [⚠️ @Public() bypass — customers.controller.ts:29]
+  2. Validate body (createCustomerSchema)  [✅ ZodValidationPipe]
+  3. repo.findByCode(code) → ConflictException 409  [✅ customers.service.ts:26-28]
+  4. normalizeCompanyName(name)  [✅ customers.service.ts:33]
+  5. repo.create({ ...input, createdBy, updatedBy })  [✅ customers.service.ts:31-36]
+  6. INSERT CUSTOMER_MST_HIST (snapshot)  [❌ MISSING]
+  7. INSERT DELIVERY_MST + CUSTOMER_REL  [❌ MISSING]
+  8. Return 201  [⚠️ controller mock]
 ```
 
 ### 4.3 Update
 
+`Confirmed by code` — `EditCustomerAction.java:223-383`, `customers.service.ts:39-44`
+
 ```
-1. Guard: customer.write
-2. findOne(id) → 404 if missing/deleted
-3. Validate partial body (updateCustomerSchema)
-4. IF name: normalizeCompanyName
-5. prisma.customer.update
-6. [LEGACY] INSERT CUSTOMER_MST_HIST — ❌ chưa implement target
-7. Return 200
+LEGACY — EditCustomerAction:
+  update() [L223]: → doUpdate() [L233]
+  doUpdate() [L233]: customerService.findCustomerByCode(key) → null → errors.exclusive.control.deleted
+  → so sánh dto vs customer [L247]: chỉ UPDATE nếu có thay đổi
+  doUpdateAfter() [L279]: sync deliveryList + billTo (DELIVERY_MST + CUSTOMER_REL)
+  → ZipService checks [L346, L356, L365]
+
+TARGET:
+  1. Guard: customer.write  [⚠️ @Public() bypass]
+  2. findOne(id) → NotFoundException 404  [✅ customers.service.ts:19-22]
+  3. Validate partial body (updateCustomerSchema)  [✅ ZodValidationPipe]
+  4. IF name: normalizeCompanyName  [✅ customers.service.ts:42]
+  5. repo.update(id, data)  [✅ customers.service.ts:39-44]
+  6. Sync DELIVERY_MST + CUSTOMER_REL  [❌ MISSING]
+  7. INSERT CUSTOMER_MST_HIST  [❌ MISSING]
+  8. Return 200  [⚠️ controller mock]
 ```
 
 ### 4.4 Delete (soft-delete)
 
+`Confirmed by code` — `EditCustomerAction.java:393-425`, `customers.repository.ts:60-64`
+
 ```
-1. Guard: customer.delete
-2. findOne(id)
-3. [LEGACY] Check SALES_SLIP_TRN open — ❌ TBD target
-4. SET deletedAt = now(), updatedBy
-5. [LEGACY] INSERT CUSTOMER_MST_HIST — ❌ TBD
-6. Return 204
+LEGACY — EditCustomerAction:
+  delete() [L393]: → doDelete() [L402]
+  doDelete() [L402]: customerService.countRelations(customerCode) [L404]
+    → Map<String, Object> result — đếm quan hệ từ NHIỀU bảng (không chỉ SALES_SLIP)
+    → nếu bất kỳ count > 0 → errors.db.delete.relation [L412]
+    → super.doDelete() → CustomerService.delete() → SET DEL_DATETM
+
+TARGET:
+  1. Guard: customer.delete  [⚠️ @Public() bypass]
+  2. findOne(id) → 404  [✅ customers.service.ts:46-48]
+  3. countRelations() — check NHIỀU bảng, không chỉ SALES_SLIP  [❌ MISSING — cần xác định customerService.countRelations() query]
+  4. repo.softDelete(id, userId): SET deletedAt=now()  [✅ customers.repository.ts:60-64]
+  5. INSERT CUSTOMER_MST_HIST  [❌ MISSING]
+  6. Return 204  [⚠️ controller mock]
 ```
+
+> ⚠️ **Correction**: Legacy `doDelete()` [L402-426] gọi `customerService.countRelations()` — check nhiều quan hệ, không chỉ SALES_SLIP_TRN. Cần đọc `CustomerService.countRelations()` để biết đủ danh sách bảng.
 
 ### 4.5 ZIP lookup (legacy only — TBD target)
 
@@ -246,18 +307,39 @@ User nhập zipCode → blur
 | CUSTOMER_RANK_MST | TBD | SELECT | - | Dropdown rank |
 | CATEGORY_TRN | TBD | SELECT | - | cutoffGroup dropdown |
 | DELIVERY_MST | TBD | SELECT | - | Địa chỉ giao hàng |
-| SEQ_MAKER | - | - | - | Thay bằng cuid() |
+| SEQ_MAKER | — | — | — | Legacy allocate seq — Target: `@default(cuid())` `TARGET_DECISION` |
 | ZIP_MST | TBD | SELECT | - | ZIP lookup |
 
 ### 5.2 Prisma model (target)
 
 ```prisma
+// LEGACY_CONFIRMED — packages/db/prisma/schema.prisma (Customer model)
 model Customer {
-  id        String    @id @default(cuid())
-  code      String    @unique
-  name      String
-  // ... see packages/db/prisma/schema.prisma
-  deletedAt DateTime? @map("deleted_at")
+  id              String    @id @default(cuid())   // TARGET_DECISION: cuid() thay SEQ_MAKER
+  code            String    @unique                // CUSTOMER_CODE — user-defined
+  name            String                           // CUSTOMER_NAME
+  nameKana        String?                          // CUSTOMER_KANA
+  abbr            String?                          // CUSTOMER_ABBR
+  zipCode         String?                          // CUSTOMER_ZIP_CODE
+  address1        String?                          // CUSTOMER_ADDRESS1
+  phone           String?                          // CUSTOMER_TEL
+  email           String?                          // CUSTOMER_EMAIL
+  taxShift        String    @default("EXCLUDED")   // TAX_SHIFT_CATEGORY
+  taxFraction     String    @default("FLOOR")      // TAX_FRACT_CATEGORY
+  priceFraction   String    @default("FLOOR")      // PRICE_FRACT_CATEGORY
+  cutoffGroup     String?                          // CUTOFF_GROUP
+  cutoffDay       Int?                             // inferred
+  paybackCycle    String    @default("NEXT_MONTH") // PAYBACK_CYCLE_CATEGORY
+  creditLimit     Decimal?                         // MAX_CREDIT_LIMIT
+  discountRate    Decimal?                         // inferred
+  rankCategory    String?                          // CUSTOMER_RANK_CATEGORY — batch updated
+  remarks         String?                          // REMARKS
+  deletedAt       DateTime?                        // DEL_DATETM
+  createdBy       String?
+  updatedBy       String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
   @@map("customer")
 }
 ```
@@ -281,7 +363,7 @@ model Customer {
 | 6 | cutoffDay 1-31 | submit | Zod int min/max | - | `customer.ts:65-71` |
 | 7 | creditLimit >= 0 | submit | nonnegative | >= 0 | WF-02 |
 | 8 | cutoffGroup in CATEGORY | submit | TBD | required legacy | WF-02 — UI chưa enforce |
-| 9 | Cannot delete if open sales | delete | TBD 409 | cannotDelete | WF-02 — Inferred |
+| 9 | `customerService.countRelations()` → bất kỳ count > 0 → reject delete | delete | TBD 409 | `errors.db.delete.relation` | `EditCustomerAction.java:402-423` — `Confirmed by code` |
 
 ### Zod schemas (implemented)
 
@@ -333,17 +415,24 @@ model Customer {
 salescube-ts/
   apps/web/src/app/(app)/customers/
     page.tsx                    # list ✅
-    new/page.tsx                # create ✅
-    [id]/page.tsx               # edit ✅
-    _components/customer-form.tsx
+    new/page.tsx                # create form ✅
+    [id]/page.tsx               # edit form ✅
+    _components/customer-form.tsx  # form component
   apps/api/src/modules/customers/
-    customers.controller.ts     # ⚠️ mock responses
-    customers.service.ts        # ✅
-    customers.repository.ts     # ✅
-  packages/shared/src/customer.ts
-  packages/domain/src/customer/normalize.ts
+    customers.controller.ts     # ⚠️ MOCK — không inject service, trả hardcode
+    customers.service.ts        # ✅ logic thật (duplicate check, normalize, soft-delete)
+    customers.repository.ts     # ✅ Prisma queries (search, CRUD, softDelete)
+    customers.module.ts         # module wiring
+  apps/web/src/lib/customers-api.ts  # client-side API calls
+  packages/shared/src/customer.ts   # Zod schemas + DTO types
+  packages/domain/src/customer/normalize.ts  # normalizeCompanyName
   packages/db/prisma/schema.prisma  # model Customer
 ```
+
+**Vấn đề chính**: `CustomersController` có `constructor()` rỗng — không inject `CustomersService`.  
+Cần wire lại: `constructor(private readonly service: CustomersService)` và gọi `service.*` thay mock.
+
+`LEGACY_CONFIRMED` — `customers.controller.ts:31-33`
 
 ### 10.2 Field mapping (legacy → Prisma)
 
@@ -395,19 +484,22 @@ salescube-ts/
 
 ## 12. 実装チェックリスト / Implementation Checklist
 
-- [x] Prisma model `Customer`
-- [x] Zod schemas (create/update/search)
-- [x] Domain `normalizeCompanyName`
-- [x] Repository (search, CRUD, soft-delete)
-- [x] Service (duplicate check, not found)
-- [ ] Controller wired to service (đang mock)
-- [ ] Auth guard bật lại (bỏ `@Public()`)
-- [x] Web list page + pagination
-- [x] Web create/edit form (subset fields)
-- [ ] UI: fields còn thiếu (bank, credit, rank, office...)
-- [ ] ZIP lookup integration
-- [ ] `customer_hist` audit trail
-- [ ] `customer_rel` relationships
-- [ ] Delete guard (open sales orders)
-- [ ] Copy customer function
-- [ ] E2E test happy path
+**Đã hoàn thành** (`LEGACY_CONFIRMED` từ source code):
+- [x] Prisma model `Customer` — `packages/db/prisma/schema.prisma`
+- [x] Zod schemas: `createCustomerSchema`, `updateCustomerSchema`, `customerSearchSchema` — `packages/shared/src/customer.ts`
+- [x] Domain `normalizeCompanyName` — `packages/domain/src/customer/normalize.ts`
+- [x] Repository: `search`, `findById`, `findByCode`, `create`, `update`, `softDelete` — `customers.repository.ts`
+- [x] Service: duplicate check, 404, normalize, soft-delete — `customers.service.ts`
+- [x] Web list page + pagination — `apps/web/.../customers/page.tsx`
+- [x] Web create/edit form (partial fields) — `customers/new/page.tsx`, `[id]/page.tsx`
+
+**Cần làm tiếp** (ưu tiên theo impact):
+- [ ] **[HIGH]** Wire controller → service: bỏ mock, inject `CustomersService` — `customers.controller.ts:31`
+- [ ] **[HIGH]** Bỏ `@Public()` — bật `JwtAuthGuard` + `RolesGuard` — `customers.controller.ts:29`
+- [ ] **[HIGH]** Delete guard: check `SALES_SLIP_TRN` open trước khi xóa
+- [ ] **[HIGH]** `customer_hist` audit trail: INSERT snapshot sau mỗi create/update/delete
+- [ ] **[MEDIUM]** UI fields còn thiếu: bank info, creditLimit, rankCategory, officeName...
+- [ ] **[MEDIUM]** `customer_rel` parent-child relationships
+- [ ] **[LOW]** ZIP lookup: `/api/zip/:code` → ZIP_MST lookup
+- [ ] **[LOW]** Copy customer function
+- [ ] **[LOW]** E2E test happy path

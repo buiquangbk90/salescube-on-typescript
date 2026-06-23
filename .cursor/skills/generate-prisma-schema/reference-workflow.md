@@ -504,6 +504,48 @@ Use only as a diagnostic, not as permission to apply changes.
 
 ---
 
+# Phase 5.5 – Spec 06 Documentation Sync
+
+## Mục tiêu
+
+Cập nhật `docs/spec/06-prisma-schema.md` từ `schema.prisma` đã validate — **tách bạch** design doc và code schema.
+
+## Preflight
+
+- Nếu `docs/spec/07-db-schema.md` corrupt hoặc chưa pass gap `SPEC-R07` → cite DDL từ `CREATE.sql` / `output/cursor/database/table-dictionary.md`, **không** cite spec 07.
+
+## Nội dung bắt buộc trong spec 06
+
+```markdown
+# Prisma Schema — <module/scope>
+
+> Source of truth code: `salescube-ts/packages/db/prisma/schema.prisma`
+> Provenance: DDL_CONFIRMED | TARGET_DECISION | ASSUMPTION
+
+## Tổng quan tables (scope hiện tại)
+
+## Conventions (PK, money, audit, soft-delete)
+
+## Enums (TARGET_DECISION — ghi legacy code tương ứng)
+
+## Quan hệ chính (diagram hoặc bullet)
+
+## Khác biệt Legacy vs Target (bảng)
+
+## Decision log (snapshot vs reference, payment_allocation, ...)
+
+## Verify commands
+```
+
+## Quy tắc
+
+1. Mọi enum/type mapping ghi `TARGET_DECISION` + legacy constant nếu có.
+2. Không mô tả `DEL_DATETM` → `deletedAt` như đã xác minh behavior nếu chưa có RE evidence.
+3. Cập nhật `docs/spec/_index.md` trạng thái spec 06.
+4. Cross-ref `docs/spec/02-entity-list.md` — field legacy chưa map → ghi Open Questions.
+
+---
+
 # Phase 6 – Migration Policy
 
 ## Default policy

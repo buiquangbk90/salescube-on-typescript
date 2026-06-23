@@ -42,10 +42,10 @@ Kiểm tra `docs/spec/gaps/` để lấy số `<NN>` tiếp theo.
 | Loại | Baseline bắt buộc |
 |------|-------------------|
 | FD | Template 11 sections + provenance + WF + entity list + code target |
-| WF | Template WF skill + `12-bussiness-workflow.md` + Action trace |
-| RE | `AGENT.md` (10 outputs + evidence rules) + confidence rules |
-| PRISMA | Mapping rules + DDL/entity list |
-| MIGRATION | FD/WF tương ứng + migration plan checklist |
+| WF | Template WF skill + `12-bussiness-workflow.md` (12 mục Phase 2.5) + Action trace |
+| RE | `AGENT.md` (10 outputs + evidence rules) + `docs/spec/_index.md` publish checklist |
+| PRISMA | Mapping rules + DDL/entity list + `docs/spec/06` sync |
+| MIGRATION | FD/WF tương ứng + migration plan + `docs/spec/04` |
 
 ### Phase 2 – Gap analysis từng file
 

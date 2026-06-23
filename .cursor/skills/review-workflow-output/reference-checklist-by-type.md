@@ -20,7 +20,7 @@
 
 ---
 
-## WF — Workflow Doc (`output/workflows/WF-*.md`)
+## WF — Workflow Doc (`output/cursor/workflows/WF-*.md`)
 
 | # | Kiểm tra |
 |---|----------|
@@ -41,7 +41,7 @@
 
 ---
 
-## RE — Reverse Engineering (`output/*.md`, `output/database/*.md`)
+## RE — Reverse Engineering (`output/*.md`, `output/cursor/database/*.md`)
 
 | # | Kiểm tra |
 |---|----------|

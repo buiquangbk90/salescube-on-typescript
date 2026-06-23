@@ -648,7 +648,28 @@ Template:
 
 ## Core documentation files
 
-### `output/01-reverse-engineering-overview.md`
+> **Output index chuẩn (AGENT.md):**
+>
+> | File | AGENT # | Publish to |
+> |------|---------|------------|
+> | `output/01-architecture-overview.md` | #1 | — |
+> | `output/02-module-inventory.md` | #2 | `docs/spec/01-module-inventory.md` |
+> | `output/03-route-api-inventory.md` | #3 | `docs/spec/08-api-contracts.md` |
+> | `output/04-database-analysis.md` | #4 | — |
+> | `output/05-background-jobs.md` | #5 | `docs/spec/10-batch-jobs.md` |
+> | `output/06-auth-permission-analysis.md` | #6 | — |
+> | `output/07-screen-route-mapping.md` | #7 | `docs/spec/05-screen-inventory.md` |
+> | `output/08-business-flow-hypotheses.md` | #8 | — |
+> | `output/09-external-integrations.md` | #9 | — |
+> | `output/10-risks-unknowns.md` | #10 | — |
+> | `output/11-service-inventory.md` | +1 | `docs/spec/09-service-inventory.md` |
+> | `output/database/table-dictionary.md` | spec-11 | — |
+> | `output/database/relationship-map.md` | spec-11 | — |
+> | `output/database/suspected-erd.mmd` | spec-11 | — |
+> | `output/database/data-lifecycle.md` | spec-11 | — |
+> | `output/database/data-integrity-risks.md` | spec-11 | — |
+
+### `output/01-architecture-overview.md`
 
 ```markdown
 # SalesCube Legacy Reverse-engineering Overview
@@ -704,6 +725,162 @@ Template:
 | Module | Table | Read/Write | Queries/Methods | Soft-delete signal | Confidence |
 |---|---|---|---|---|---|
 ```
+
+---
+
+# Phase 5b – Batch & Stored Procedure Analysis
+
+## Mục tiêu
+
+Phân tích các batch script, shell entry points và stored procedures để xác định behavior **không thuộc HTTP flow**. Không bỏ qua phase này — batch logic thường chứa critical business rules (rank update, stock recalculation, billing close).
+
+## Scan targets (theo thứ tự)
+
+1. `SalesCube/DB/batch/salescube_batch/*.sh` — shell trigger scripts
+2. `SalesCube/DB/batch/salescube_batch/*.sql` — SQL gọi từ shell
+3. `SalesCube/DB/batch/sp/*.sql` — stored procedures
+4. Java classes implement `Job`, `Runnable`, `Schedulable` hoặc có `@Scheduled` annotation (nếu tồn tại)
+
+## Output
+
+```text
+output/reverse-engineering/05b-batch-analysis.md
+```
+
+> Nếu module không có batch, ghi rõ: `No batch entry points found for module <name>` và skip phase.
+
+### Template batch inventory
+
+```markdown
+# Batch & SP Analysis
+
+## Shell-triggered Batches
+
+| Batch | Shell script | SQL/SP called | Tables READ | Tables WRITE | Schedule | Confidence | Evidence |
+|---|---|---|---|---|---|---|---|
+| UpdateCustomerRank | `UpdateCustomerRank.sh` | `SP_UPDATE_CUSTOMER_RANK_SALES.sql` | `SALES_SLIP_TRN`, `CUSTOMER_MST` | `CUSTOMER_MST` | UNKNOWN | CONFIRMED_BY_CODE | `batch/salescube_batch/UpdateCustomerRank.sh:L1-20` |
+
+## Stored Procedures
+
+| SP name | Input params | Output | Tables READ | Tables WRITE | Error handling | Transaction | Called by | Confidence |
+|---|---|---|---|---|---|---|---|---|
+| `SP_UPDATE_CUSTOMER_RANK_SALES` | - | - | - | - | - | UNKNOWN | shell script | CONFIRMED_BY_CODE |
+
+## Unknowns / Open Questions
+- ...
+```
+
+### Bắt buộc document với mỗi SP
+
+- Input parameters (tên, kiểu, nullable)
+- Output/result set hoặc OUT params
+- Tables READ / WRITE / UPDATE (với điều kiện nếu có)
+- Error handling: SIGNAL, RAISE, ROLLBACK pattern
+- Transaction behavior: explicit COMMIT/ROLLBACK hay auto?
+- Trigger condition: called by shell, application, DB trigger, hay không rõ
+
+---
+
+# Phase 9b – Database Deep Analysis
+
+## Mục tiêu
+
+Sinh 5 output artifacts theo yêu cầu `docs/spec/11-database_analys.md`. Phase này bắt buộc chạy sau Phase 9.
+
+## Output files (bắt buộc tất cả 5)
+
+```text
+output/database/
+├── table-dictionary.md
+├── relationship-map.md
+├── suspected-erd.mmd
+├── data-lifecycle.md
+└── data-integrity-risks.md
+```
+
+### 1. `output/database/table-dictionary.md`
+
+Mỗi table ghi: PK, FK, unique constraints, search fields, status flag fields, soft-delete fields, audit fields, business meaning, source evidence.
+
+```markdown
+| Table | Type | PK | FK count | Soft-delete col | Audit cols | Business meaning | Evidence |
+|---|---|---|---|---|---|---|---|
+| `CUSTOMER_MST` | MASTER | `CUSTOMER_CD` | 0 | `DEL_DATETM` | `INS_DATETM`, `UPD_DATETM` | Customer master | DDL_CONFIRMED |
+```
+
+### 2. `output/database/relationship-map.md`
+
+App-layer relationships (không chỉ DB FK). Gắn `APP_LAYER_ONLY` cho quan hệ không có FK constraint trong DDL.
+
+```markdown
+| From table | Column | To table | Column | Type | Enforcement | Evidence |
+|---|---|---|---|---|---|---|
+| `SALES_SLIP_TRN` | `CUSTOMER_CD` | `CUSTOMER_MST` | `CUSTOMER_CD` | n:1 | APP_LAYER_ONLY | SQL_CONFIRMED |
+```
+
+### 3. `output/database/suspected-erd.mmd`
+
+Mermaid ERD diagram cho core transaction tables. Không thêm FK nếu DDL không confirm.
+
+```mermaid
+erDiagram
+  CUSTOMER_MST ||--o{ SALES_SLIP_TRN : "app-layer"
+  SALES_SLIP_TRN ||--o{ SALES_LINE_TRN : "header-detail"
+```
+
+### 4. `output/database/data-lifecycle.md`
+
+INSERT / UPDATE / DELETE lifecycle của mỗi table:
+
+```markdown
+| Table | INSERT by | UPDATE by | DELETE by | Delete behavior | Evidence |
+|---|---|---|---|---|---|
+| `SALES_SLIP_TRN` | `SalesService.register()` | `SalesService.update()` | Status cancel only | `DEL_DATETM` set | SQL_CONFIRMED |
+```
+
+### 5. `output/database/data-integrity-risks.md`
+
+```markdown
+| Risk | Table | Detail | Severity | Evidence |
+|---|---|---|---|---|
+| No DB FK | `SALES_SLIP_TRN.CUSTOMER_CD` | App-layer only — delete CUSTOMER_MST có thể orphan | HIGH | DDL_CONFIRMED |
+| SEQ_MAKER app-allocated | `SALES_SLIP_TRN.SEQ_NO` | Concurrency risk nếu không lock | HIGH | JAVA_CONFIRMED |
+```
+
+## Nguyên tắc bắt buộc
+
+- Không tự thêm FK vào ERD nếu DDL không confirm — ghi `APP_LAYER_ONLY`.
+- Mọi quan hệ phải có provenance: `CONFIRMED_BY_DDL`, `APP_LAYER_ONLY`, `INFERRED_FROM_CODE`, `UNKNOWN`.
+- Ưu tiên core transaction tables trước: `SALES_SLIP_TRN`, `RO_SLIP_TRN`, `BILL_TRN`, `DEPOSIT_SLIP_TRN`.
+- Tenant suffix `_XXXXX` trong DDL: document trong `table-dictionary.md` với note "Table name has instance suffix — `@@map()` strategy needed".
+
+---
+
+# Phase 9c – Spec Bundle Publish
+
+## Mục tiêu
+
+Sau khi sinh xong `output/01–11`, copy/sync các deliverable tương ứng vào `docs/spec/` để các workflow downstream có thể tham chiếu.
+
+## Publish map
+
+| Source (`output/`) | Target (`docs/spec/`) |
+|---|---|
+| `02-module-inventory.md` | `01-module-inventory.md` |
+| `03-route-api-inventory.md` | `08-api-contracts.md` |
+| `05-background-jobs.md` | `10-batch-jobs.md` |
+| `07-screen-route-mapping.md` | `05-screen-inventory.md` |
+| `11-service-inventory.md` | `09-service-inventory.md` |
+
+> **Không publish:** `output/database/*`, `output/01`, `output/04`, `output/06`, `output/08–10` — đây là internal RE artifacts.
+> **Không publish:** `docs/spec/11` và `docs/spec/12` — giữ làm requirement baseline.
+> **Nếu `docs/spec/07-db-schema.md` bị corrupt** (ví dụ toàn giá trị `IF`): regenerate từ `output/04-database-analysis.md` và `output/database/table-dictionary.md`.
+
+## Checklist trước khi kết thúc Phase 9c
+
+- [ ] 5 files trong publish map đã được sync
+- [ ] `docs/spec/_index.md` cập nhật với provenance + ngày sync
+- [ ] `docs/spec/07-db-schema.md` không còn corrupt
 
 ---
 
