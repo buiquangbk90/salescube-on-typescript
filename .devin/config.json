@@ -9,6 +9,7 @@
       "Read(**)",
       "Write(.devin/output/**)",
       "Write(.devin/module-map.md)",
+      "Write(docs/_generated/**)",
       "Exec(git)",
       "Exec(pnpm)",
       "Exec(pnpm run)",
