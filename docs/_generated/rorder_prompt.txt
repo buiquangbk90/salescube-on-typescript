@@ -1,0 +1,4 @@
+> AGENTS.md と docs/templates/ に従い、業務ドメイン `rorder`（受注）をリバースエンジニアリングして、
+> 要件定義書・技術仕様書・設計書を日本語で作成してください。
+> action/form/service/entity/SQL/JSP を静的解析し、事実はファイルパス・クラス名・テーブル名で裏付け、
+> 推測は「（推測）」と明記すること。出力先は各ツール指定の `docs/_generated/<tool>/` 配下。
