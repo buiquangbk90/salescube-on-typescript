@@ -1,0 +1,17 @@
+---
+description: Java / Seasar2 ソースを読むときの技術メモ
+globs: WEB/SalesCube/src/**/*.java,WEB/SalesCube/src/**/*.jsp,DB/**/*.sql,WEB/SalesCube/src/main/resources/*.dicon
+alwaysApply: false
+---
+
+# Seasar2 (SAStruts / S2JDBC) 読解メモ
+
+- **Action**: SAStruts のアクション。`execute` 系メソッド＝リクエスト処理の入口。`@Execute` に注目。
+- **Form**: 画面入力。バリデーションアノテーション（`@Required` 等）に業務ルールが現れる。
+- **Service**: 業務ロジックの中心。`AbstractService` 系を継承。トランザクション境界を確認。
+- **Entity**: S2JDBC のテーブルマッピング（`@Table` `@Column` `@Id`）。テーブル定義の一次情報。
+- **DI/AOP**: `*.dicon`（`s2jdbc.dicon`, `app.dicon`, `customizer.dicon` 等）で結線・トランザクション・命名規約を定義。
+- **SQL**: `DB/sql/insertmaster`（マスタ）、`DB/sql/update`（スキーマ）、`DB/batch`（バッチ・SP）。
+- **命名規約**: `convention.dicon` の規約に従い action/service が解決される。
+
+読解時はクラス→呼び出し先を辿り、DB テーブルと画面(JSP)まで結びつけること。

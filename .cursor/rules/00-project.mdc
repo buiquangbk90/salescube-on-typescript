@@ -1,0 +1,14 @@
+---
+description: SalesCube プロジェクト全体の前提（常時適用）
+alwaysApply: true
+---
+
+SalesCube はオープンソースの販売管理システム（Java / Seasar2 = SAStruts + S2JDBC、JSP、PostgreSQL、JasperReports、AGPLv3）。
+本作業の目的はソースの**リバースエンジニアリングによる日本語ドキュメント作成**（要件定義書・技術仕様書・設計書）。
+
+必須ルール:
+- 詳細は必ず `AGENTS.md` を参照する。
+- 生成物は `docs/_generated/cursor/{requirements,technical,design}/` にのみ書く。他ツールのディレクトリは触らない。
+- `WEB/` `DB/` のソースは改変しない（静的解析のみ）。
+- 出力は日本語。`docs/templates/` のテンプレートに従う。
+- 事実はファイルパス・クラス名・テーブル名で裏付け、推測は「（推測）」と明記。

@@ -1,0 +1,10 @@
+# 解析対象外（ノイズ低減）
+.worktrees/
+**/webapp/css/**
+**/webapp/scripts/**
+**/webapp/images/**
+**/WEB-INF/lib/**
+**/*.min.js
+**/*.class
+target/
+build/

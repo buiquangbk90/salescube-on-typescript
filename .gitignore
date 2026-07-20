@@ -1,0 +1,20 @@
+# AI reverse-engineering isolation worktrees
+.worktrees/
+
+# Java build artifacts (in case a build is added later)
+target/
+build/
+*.class
+*.war
+*.jar
+
+# IDE
+.idea/
+*.iml
+.settings/
+.classpath
+.project
+
+# OS
+.DS_Store
+Thumbs.db

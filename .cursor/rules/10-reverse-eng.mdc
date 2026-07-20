@@ -1,0 +1,21 @@
+---
+description: リバースエンジニアリングの進め方と成果物の規約
+alwaysApply: false
+---
+
+# リバースエンジニアリング手順
+
+ドメイン単位で解析する。1 ドメインにつき action → form → service → entity → SQL → JSP の順に追う。
+
+業務ドメイン（`jp.co.arkinfosys.<domain>`）:
+sales(売上) / rorder(受注) / porder(発注) / purchase(仕入) / estimate(見積) /
+bill(請求) / deposit(入金) / payment(支払) / stock(在庫) / master(マスタ) /
+report(帳票) / setting(設定)
+
+各ドメインで 3 種の成果物を作る:
+- 要件定義書 → `docs/_generated/cursor/requirements/<domain>_要件定義書.md`
+- 技術仕様書 → `docs/_generated/cursor/technical/<domain>_技術仕様書.md`
+- 設計書     → `docs/_generated/cursor/design/<domain>_設計書.md`
+
+テンプレートは `docs/templates/` の各 `*_template.md` を必ず踏襲する。
+DI/トランザクションは `WEB/SalesCube/src/main/resources/*.dicon` を参照する。

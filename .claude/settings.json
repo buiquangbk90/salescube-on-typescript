@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "deny": [
+      "Write(./WEB/**)",
+      "Write(./DB/**)",
+      "Edit(./WEB/**)",
+      "Edit(./DB/**)"
+    ]
+  }
+}
