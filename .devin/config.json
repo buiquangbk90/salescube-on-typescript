@@ -1,0 +1,31 @@
+{
+  "read_config_from": {
+    "cursor": true,
+    "windsurf": true,
+    "claude": true
+  },
+  "permissions": {
+    "allow": [
+      "Read(**)",
+      "Write(.devin/output/**)",
+      "Write(.devin/module-map.md)",
+      "Exec(git)",
+      "Exec(pnpm)",
+      "Exec(pnpm run)",
+      "Exec(turbo)",
+      "Exec(biome)"
+    ],
+    "deny": [
+      "Exec(sudo)",
+      "Exec(rm -rf)",
+      "Exec(npm)",
+      "Exec(yarn)"
+    ]
+  },
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"]
+    }
+  }
+}

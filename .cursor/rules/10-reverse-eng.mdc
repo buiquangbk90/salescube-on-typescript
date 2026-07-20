@@ -1,0 +1,30 @@
+---
+description: Quy trình reverse-engineering SalesCube & chuẩn tài liệu (áp dụng khi RE module / sinh docs benchmark)
+globs:
+alwaysApply: false
+---
+
+# Reverse-engineering & chuẩn tài liệu
+
+Khi RE một module SalesCube để benchmark 3 agent, Cursor là agent `cursor`.
+
+## Thứ tự đọc
+1. `docs/README.md` (harness + rubric)
+2. `.devin/overview.md` (kiến trúc, quy ước đặt tên, luồng nghiệp vụ, 12 domain)
+3. `docs/modules/<module>.md` (task card — scope cố định)
+
+## Đầu ra (dùng chung template ở `docs/templates/`)
+Sinh đúng 3 file cho module đang làm:
+- `docs/_generated/cursor/requirements/<module>.md` — yêu cầu nghiệp vụ (what)
+- `docs/_generated/cursor/technical/<module>.md` — kỹ thuật Java hiện trạng (as-is)
+- `docs/_generated/cursor/design/<module>.md` — thiết kế bản port NestJS/Next.js (to-be)
+
+**Chỉ ghi trong `docs/_generated/cursor/**`** — không đụng `claude/`, `devin/`.
+
+## Luật
+- Bám source Java thật; KHÔNG suy diễn từ tên biến. Thiếu thông tin → `[CẦN XÁC NHẬN]`, không bịa.
+- Giữ nguyên thứ tự & tiêu đề mục template. Viết tiếng Việt (giữ thuật ngữ Nhật trong ngoặc).
+- Không mở rộng ngoài scope file của task card; phần liên quan ghi ở mục "phụ thuộc".
+- Không trộn `Slip` (đầu phiếu) và `Line` (dòng chi tiết); không bỏ qua tầng Service khi mô tả Action.
+
+Module pilot: **estimate (見積)** — `docs/modules/estimate.md`.

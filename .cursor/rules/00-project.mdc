@@ -1,0 +1,20 @@
+---
+description: Tổng quan dự án SalesCube-on-TypeScript (luôn áp dụng)
+globs:
+alwaysApply: true
+---
+
+# SalesCube (TypeScript) — bối cảnh
+
+Monorepo viết lại hệ quản lý bán hàng **SalesCube** (gốc Java/Seasar2) sang TypeScript.
+
+- **PM: pnpm only** (`pnpm@9.4.0`), Node >=24. Không dùng npm/yarn.
+- **Monorepo:** pnpm workspaces + Turborepo. Chạy task từ root qua `turbo`.
+- **Apps:** `apps/api` (NestJS), `apps/web` (Next.js App Router).
+- **Packages:** `packages/types`, `packages/tsconfig`.
+- **Lint/format: Biome** (không ESLint/Prettier). TS strict, không `any` trừ khi có chú thích.
+
+Quy tắc đầy đủ ở `AGENTS.md` (nguồn chính). Trước khi báo xong: `pnpm lint && pnpm type-check && pnpm test && pnpm build`.
+Conventional commits; không commit vào `main`/`develop`.
+
+Tác vụ reverse-engineering: xem rule `10-reverse-eng` và harness `docs/`.

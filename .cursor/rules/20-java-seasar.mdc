@@ -1,0 +1,33 @@
+---
+description: Quy ước đọc code Java / Seasar2 / S2Struts của SalesCube gốc
+globs: **/*.java,**/*.jsp,**/*.sql
+alwaysApply: false
+---
+
+# Đọc code Java gốc (Seasar2 + S2Struts)
+
+Áp dụng khi trong context có file `.java` / `.jsp` / `.sql` của SalesCube gốc.
+
+## Kiến trúc phân tầng
+`[JSP View] → [Action] → [Service] → [Entity/SQL]`, với `[Form]/[DTO]` truyền dữ liệu giữa các tầng.
+
+| Tầng | Package | Vai trò |
+|------|---------|---------|
+| Action | `jp.co.arkinfosys.action.*` | nhận request (`@Execute`), điều phối, trả view |
+| Form | `jp.co.arkinfosys.form.*` | bean nhận dữ liệu màn hình |
+| DTO | `jp.co.arkinfosys.dto.*` | truyền dữ liệu giữa tầng |
+| Service | `jp.co.arkinfosys.service.*` | **logic nghiệp vụ chính** (extends `AbstractService<Entity>`) |
+| Entity | `jp.co.arkinfosys.entity.*` | ánh xạ bảng; `*Trn`=transaction, join ở `entity/join` |
+| Common | `jp.co.arkinfosys.common.*` | `Constants`, `Categories`, `StringUtil`... |
+
+## Quy ước đặt tên (để diễn giải đúng)
+- Action: `{Verb}{Domain}Action` — `Input*`=nhập/sửa, `Search*`=tìm, `Output*`=xuất.
+- Service: `{Verb}{Domain}Service`, thường có inner class `Param` chứa key tham số.
+- Entity: hậu tố `Trn`=transaction; không hậu tố = master (`Customer`, `Product`).
+- `Slip`=đầu phiếu, `Line`=dòng chi tiết; DTO: `{Domain}SlipDto`/`{Domain}LineDto`.
+- Seasar: DI qua `@Resource`; `Beans`/`BeanMap` để map tham số ↔ điều kiện.
+
+## Khi trace để viết docs
+- Logic chính nằm ở **Service**, không phải Action — luôn mở Service.
+- Ghi rõ thao tác DB (SELECT/INSERT/UPDATE/DELETE) và side-effect (tồn kho, công nợ, phiếu cặp, sinh số phiếu).
+- Không chắc → `[CẦN XÁC NHẬN]`, không bịa.

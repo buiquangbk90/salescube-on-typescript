@@ -1,0 +1,11 @@
+# Không quét (giảm nhiễu, tiết kiệm context)
+node_modules
+dist
+build
+.next
+out
+.turbo
+coverage
+pnpm-lock.yaml
+*.log
+.DS_Store
